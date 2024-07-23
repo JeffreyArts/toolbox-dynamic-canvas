@@ -28,12 +28,14 @@ body {
     padding-top: 32px;
     padding-right: 32px;
     float: left;
-
+    
+    &.__hideCursor,
     .__hideCursor {
         cursor: none;
     }
-
+    
     > [ratio="1x1"] {
+        aspect-ratio: 1/1;
         margin: auto;
         max-width: calc(80vh - 64px);
     }

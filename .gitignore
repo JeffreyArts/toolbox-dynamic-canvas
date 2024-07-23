@@ -26,3 +26,4 @@ dist-ssr
 # Remove package locks
 package-lock.json
 yarn.lock
+gsap-bonus.tgz

@@ -9,6 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "gsap": "^3.12.5",
     "lodash": "^4.17.21",
     "normalize.css": "^8.0.1",
     "sass": "^1.54.9",

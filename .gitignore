@@ -22,6 +22,8 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+.env
+.env*
 
 # Remove package locks
 package-lock.json

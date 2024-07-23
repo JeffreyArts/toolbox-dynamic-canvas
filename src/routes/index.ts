@@ -1,17 +1,17 @@
+import Home from "./home.vue"
+import OptionsOverview from "./options-overview.vue"
 import { createWebHistory, createRouter } from "vue-router"
-import Home from "./home/home.vue"
-import OptionsOverview from "./options-overview/options-overview.vue"
 
 const routes = [
     {
         path: "/",
         name: "Home",
-        component: Home,
+        component: Home
     },
     {
         path: "/options-overview",
         name: "Options overview",
-        component: OptionsOverview,
+        component: OptionsOverview
     }
 ]
 

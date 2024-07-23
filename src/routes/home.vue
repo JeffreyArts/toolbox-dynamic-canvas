@@ -35,7 +35,7 @@ export default defineComponent ({
 
 <style lang="scss">
 
-    @import '../../assets/scss/variables.scss';
+    @import './../assets/scss/variables.scss';
     .toolbox-home {
         display: flex;
         flex-flow: column;

@@ -82,11 +82,6 @@
                         <input type="text" id="inputText" v-model="value">
                     </div>
                 </div>
-
-
-
-
-
                 <div class="option-group" name="Extra's">
                     <div class="option">
                         <label for="inputNumber">
@@ -95,15 +90,11 @@
                     </div>
                     <div class="option">
                         <label for="inputText">
-                            Additional information <small>to epxlain something small </small>
+                            Additional information <small>to explain something small </small>
                         </label>
 
                     </div>
                 </div>
-
-
-
-
             </div>
         </aside>
     </div>
@@ -131,7 +122,7 @@ export default defineComponent ({
 
 <style lang="scss">
 
-    @import '../../assets/scss/variables.scss';
+    @import './../assets/scss/variables.scss';
 
     .options-overview {
         .viewport-content {

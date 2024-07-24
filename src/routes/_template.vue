@@ -55,7 +55,7 @@ export default defineComponent ({
                     return
                 }
                 
-                let newOptions = {} as Options
+                let newOptions = {} as any
                 const localStorageOptions = localStorage.getItem("options")
                 if (localStorageOptions) {
                     newOptions = _.cloneDeep(JSON.parse(localStorageOptions))

@@ -174,7 +174,6 @@ export default defineComponent ({
     position: relative;
     margin: 0;
     padding: 0;
-    height: 100vh;
     display: block;
     float: left;
 }
@@ -215,6 +214,9 @@ export default defineComponent ({
 .site-menu-list {
     display: flex;
     flex-flow: column;
+    overflow-y: auto;
+    max-height: calc(100vh - 128px);
+    overflow-x: hidden;
 }
 
 .site-menu-list-item {

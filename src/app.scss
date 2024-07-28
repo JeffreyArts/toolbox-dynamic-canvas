@@ -45,6 +45,13 @@ body {
     width: 100%;
     padding-top: 64px;
     float: left;
+
+    a {
+        color: #09f;
+        &:visited {
+            color: #f09;
+        }
+    }
 }
 
 @media all and (min-width: 640px) {
@@ -66,7 +73,10 @@ body {
 }
 
 h1 {
-    font-family: "Fixedsys"
+    font-family: "Fixedsys";
+    margin: 18px 0;
+    font-size: 32px;
+    line-height: 32px;
 }
 
 * {
@@ -132,6 +142,9 @@ src: url("/src/assets/fonts/fixed-sys.otf");
     border: 0 none transparent;
     padding: 8px 16px;
     transition: .16s all ease;
+    &:active {
+        scale: .9;
+    }
 }
 
 

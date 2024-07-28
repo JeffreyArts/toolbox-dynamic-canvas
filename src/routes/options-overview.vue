@@ -92,7 +92,26 @@
                         <label for="inputText">
                             Additional information <small>to explain something small </small>
                         </label>
-
+                    </div>
+                    <div class="option">
+                        <label>Table</label>
+                        <table>
+                            <tr>
+                                <td>id</td>
+                                <td>0029</td>
+                            </tr>
+                            <tr>
+                                <td>username</td>
+                                <td>Test</td>
+                            </tr>
+                            <tr>
+                                <td>key</td>
+                                <td>value</td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="option __isSubmit">
+                        <button class="button">Do nothing</button>
                     </div>
                 </div>
             </div>

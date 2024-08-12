@@ -61,10 +61,14 @@ export default defineComponent ({
                     newOptions = _.cloneDeep(JSON.parse(localStorageOptions))
                 }
                 _.forOwn(this.options, (value, key) => {
-                    if (_.isObject(value)) {
+                    if (_.isArray(value)) {
+                        // If the value is an array, copy it directly
+                        newOptions[key] = [...value]
+                    } else if (_.isObject(value)) {
                         if (!_.isObject(newOptions[key])) {
                             newOptions[key] = {}
                         }
+                        // Recursively copy the object properties
                         _.forOwn(value, (v, k) => {
                             newOptions[key][k] = v
                         })

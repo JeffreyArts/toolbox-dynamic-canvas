@@ -24,7 +24,6 @@
 import { RouteRecord, RouteComponent } from "vue-router"
 import {defineComponent} from "vue"
 import siteIcon from "./site-icon/site-icon.vue"
-import _ from "lodash"
 import gsap from "gsap"
 
 export default defineComponent ({
@@ -46,8 +45,8 @@ export default defineComponent ({
         }
     },
     mounted() {
-        
-        _.each(this.$router.getRoutes(), (route: RouteRecord) :void => {
+        const allRoutes = this.$router.getRoutes()
+        allRoutes.forEach((route: RouteRecord) :void => {
             if (route.name != "Home") {
                 this.routes.push(route)
             }

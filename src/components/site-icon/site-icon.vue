@@ -142,7 +142,7 @@ export default defineComponent ({
                     this.originalGrid = []
                     const activeColor = this.activeColor ? this.activeColor : "#333"
                     const inactiveColor = this.inactiveColor ? this.inactiveColor : "#efefef"
-                    _.each(this.custom, (val) => {
+                    this.custom.forEach((val) => {
                         const data = {
                             x: val.x,
                             y: val.y,
@@ -224,8 +224,8 @@ export default defineComponent ({
                 this.customGridToIcon()
             }
 
-            _.each(this.icon, (row,y) => {
-                _.each(row, (val,x) => {
+            this.icon.forEach((row,y) => {
+                row.forEach((val,x) => {
                     const data = {
                         x,
                         y,
@@ -238,7 +238,7 @@ export default defineComponent ({
 
             if (this.displayGrid.length !== this.originalGrid.length) {
                 this.displayGrid = []
-                _.each(this.originalGrid,(grid, index) => {
+                this.originalGrid.forEach((grid, index) => {
                     this.displayGrid.push({x:grid.x,y:grid.y,color: grid.color})
                 })
             }
@@ -250,7 +250,10 @@ export default defineComponent ({
                 console.warn("No custom grid to be transform to icon")
                 return []
             }
-            _.each(_.sortBy(this.custom, ["y", "x"]), point => {
+
+            const sortedArray = _.sortBy(this.custom, ["y", "x"]);
+
+            sortedArray.forEach(point => {
                 if (!this.icon[point.y]) {
                     this.icon.push([])
                 }
@@ -265,7 +268,7 @@ export default defineComponent ({
         } as transitEffect) {
 
             if (this.transitions.length > 0) {
-                _.each(this.transitions, t => {t.kill()})
+                this.transitions.forEach(t => {t.kill()})
                 this.transitions = []
             }
 
@@ -287,7 +290,7 @@ export default defineComponent ({
                 collection = _.reverse(_.sortBy(this.originalGrid, "x"))
             } 
 
-            _.each(collection, (grid, index) => {
+            collection.forEach((grid, index) => {
                 const cell = _.find(this.displayGrid, {x:grid.x, y:grid.y})
                 if (cell) {
                     this.transitions.push(gsap.to(cell, {

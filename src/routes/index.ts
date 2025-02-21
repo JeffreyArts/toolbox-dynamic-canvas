@@ -1,3 +1,4 @@
+import DrawingRectangle from "./drawing-rectangle.vue"
 import DynamicCanvas from "./dynamic-canvas.vue"
 import Home from "./home.vue"
 import OptionsOverview from "./options-overview.vue"
@@ -13,6 +14,11 @@ const routes = [
         path: "/dynamic-canvas",
         name: "Dynamic canvas",
         component: DynamicCanvas
+    },
+    {
+        path: "/drawing-rectangle",
+        name: "Drawing rectangle",
+        component: DrawingRectangle
     },
     {
         path: "/options-overview",

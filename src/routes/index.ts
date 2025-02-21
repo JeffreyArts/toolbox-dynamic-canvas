@@ -1,3 +1,4 @@
+import DynamicCanvas from "./dynamic-canvas.vue"
 import Home from "./home.vue"
 import OptionsOverview from "./options-overview.vue"
 import { createWebHistory, createRouter } from "vue-router"
@@ -7,6 +8,11 @@ const routes = [
         path: "/",
         name: "Home",
         component: Home
+    },
+    {
+        path: "/dynamic-canvas",
+        name: "Dynamic canvas",
+        component: DynamicCanvas
     },
     {
         path: "/options-overview",

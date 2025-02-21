@@ -35,7 +35,7 @@ export default defineComponent ({
 
 <style lang="scss">
 
-    @import './../assets/scss/variables.scss';
+    @forward '@/assets/scss/variables.scss';
     .toolbox-home {
         display: flex;
         flex-flow: column;
@@ -62,7 +62,7 @@ export default defineComponent ({
                 // transition-timing-function: steps(8, end);
                 &:hover {
                     transform: rotate(45deg) scale(1.1);
-                    fill: $accentColor;
+                    fill: var(--accent-color);
                 }
             }
         }

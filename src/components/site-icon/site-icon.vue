@@ -307,7 +307,7 @@ export default defineComponent ({
 </script>
 
 <style lang="scss">
-@import './../../assets/scss/variables.scss';
+@forward '@/assets/scss/variables.scss';
 
 
 </style>

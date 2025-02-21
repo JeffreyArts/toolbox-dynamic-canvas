@@ -168,7 +168,7 @@ export default defineComponent ({
 </script>
 
 <style lang="scss">
-@import './../assets/scss/variables.scss';
+@forward '@/assets/scss/variables.scss';
 
 .site-menu-container {
     position: relative;
@@ -233,7 +233,7 @@ export default defineComponent ({
 
     &:hover,
     &:focus {
-        color: $accentColor;
+        color: var(--accent-color);
         margin-left: 24px;
         &:before {
             color: #fff;
@@ -254,7 +254,7 @@ export default defineComponent ({
     &.__isCurrent {
         color: #fff;
         &:before {
-            color: $accentColor;
+            color: var(--accent-color);
         }
     }
 }

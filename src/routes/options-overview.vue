@@ -96,18 +96,20 @@
                     <div class="option">
                         <label>Table</label>
                         <table>
-                            <tr>
-                                <td>id</td>
-                                <td>0029</td>
-                            </tr>
-                            <tr>
-                                <td>username</td>
-                                <td>Test</td>
-                            </tr>
-                            <tr>
-                                <td>key</td>
-                                <td>value</td>
-                            </tr>
+                            <tbody>
+                                <tr>
+                                    <td>id</td>
+                                    <td>0029</td>
+                                </tr>
+                                <tr>
+                                    <td>username</td>
+                                    <td>Test</td>
+                                </tr>
+                                <tr>
+                                    <td>key</td>
+                                    <td>value</td>
+                                </tr>
+                            </tbody>
                         </table>
                     </div>
                     <div class="option __isSubmit">
@@ -141,14 +143,14 @@ export default defineComponent ({
 
 <style lang="scss">
 
-    @import './../assets/scss/variables.scss';
+    @forward '@/assets/scss/variables.scss';
 
     .options-overview {
         .viewport-content {
             display: flex;
             justify-content: center;
             align-items: center;
-            color: $accentColor;
+            color: var(--accent-color);
             font-size: 16vw;
         }
     }

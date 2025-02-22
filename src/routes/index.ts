@@ -24,7 +24,7 @@ const routes = [
     {
         path: "/rotating-rectangle",
         name: "Rotating rectangle",
-        component: DrawingRectangle
+        component: RotatingRectangle
     },
     {
         path: "/options-overview",

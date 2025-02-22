@@ -1,6 +1,7 @@
 import DrawingRectangle from "./drawing-rectangle.vue"
 import RotatingRectangle from "./rotating-rectangle.vue"
 import ScalingRectangle from "./scaling-rectangle.vue"
+import Image from "./image/image.vue"
 import DynamicCanvas from "./dynamic-canvas.vue"
 import Home from "./home.vue"
 import OptionsOverview from "./options-overview.vue"
@@ -31,6 +32,11 @@ const routes = [
         path: "/scaling-rectangle",
         name: "Scaling rectangle",
         component: ScalingRectangle
+    },
+    {
+        path: "/image",
+        name: "Image",
+        component: Image
     },
     {
         path: "/options-overview",

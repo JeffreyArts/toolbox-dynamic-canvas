@@ -1,4 +1,5 @@
 import DrawingRectangle from "./drawing-rectangle.vue"
+import RotatingRectangle from "./rotating-rectangle.vue"
 import DynamicCanvas from "./dynamic-canvas.vue"
 import Home from "./home.vue"
 import OptionsOverview from "./options-overview.vue"
@@ -18,6 +19,11 @@ const routes = [
     {
         path: "/drawing-rectangle",
         name: "Drawing rectangle",
+        component: DrawingRectangle
+    },
+    {
+        path: "/rotating-rectangle",
+        name: "Rotating rectangle",
         component: DrawingRectangle
     },
     {

@@ -10,7 +10,7 @@
                 <canvas ref="targetCanvas"></canvas>
             </div>
             <footer class="viewport-datamodel">
-                <pre>{{ rectangle }}</pre>
+                <pre>{{ image }}</pre>
             </footer>
         </section>
 
@@ -26,34 +26,58 @@
                         <input type="number" id="options-height" v-model="options.height" />
                     </div>
                 </div>
-                <div class="option-group" name="Rectangle" >
-                    <!-- <div class="option">
-                        <label for="options-rectangle-height">Height</label>
-                        <input type="number" id="options-rectangle-height" v-model="options.rectangle.height" />
+                <div class="option-group" name="Image" >
+                    <div class="option">
+                        <label for="options-image-src">Source</label>
+                        <input type="file" accept="image/*" id="options-image-src" @change="processImage" />
+                    </div>
+                    <div class="option" id="posOptions">
+                        <span>
+                            <label for="options-image-x">X</label>
+                            <input type="number" size="10" id="options-image-x" v-model="options.image.x" />
+                        </span>
+                        <span>
+                            <label for="options-image-y">Y</label>
+                            <input type="number" size="10" id="options-image-y" v-model="options.image.y" />
+                        </span>
+                    </div>
+                    <div class="option" id="sizeOptions">
+                        <span>
+                            <label for="options-image-width">Width</label>
+                            <input type="number" size="10" id="options-image-width" v-model="options.image.width" />
+                        </span>
+                        <span>
+                            <label for="options-image-height">Height</label>
+                            <input type="number" size="10" id="options-image-height" v-model="options.image.height" />
+                        </span>
                     </div>
                     <div class="option">
-                        <label for="options-rectangle-width">Width</label>
-                        <input type="number" id="options-rectangle-width" v-model="options.rectangle.width" />
-                    </div> -->
-                    <div class="option">
-                        <label for="options-rectangle-originX">Origin X <i class="info"><span class="info-icon">?</span><span class="info-details">Use left, center, right or a number </span></i></label>
-                        <input type="string" id="options-rectangle-originX" v-model="options.rectangle.originX" />
+                        <label for="range">
+                            Range input
+                        </label>
+                        <input type="range" id="range" min="0" max="360" step="1" v-model="options.image.angle">
+                        <!-- optional number display-->
+                        <input type="number"  min="0" max="360" step="1" v-model="options.image.angle">
                     </div>
-                    <div class="option">
-                        <label for="options-rectangle-originY">Origin Y <i class="info"><span class="info-icon">?</span><span class="info-details">Use top, center, bottom or a number </span></i></label>
-                        <input type="string" id="options-rectangle-originY" v-model="options.rectangle.originY" />
+                    <div class="option" id="originOptions">
+                        <span>
+                            <label for="options-image-originX">Origin X <i class="info"><span class="info-icon">?</span><span class="info-details">Use left, center, right or a number </span></i></label>
+                            <input type="text" size="13" id="options-image-originX" v-model="options.image.originX" />
+                        </span>
+                        <span>
+                            <label for="options-image-originY">Origin Y <i class="info"><span class="info-icon">?</span><span class="info-details">Use top, center, bottom or a number </span></i></label>
+                            <input type="text" size="13" id="options-image-originY" v-model="options.image.originY" />
+                        </span>
                     </div>
-                    <div class="option">
-                        <label for="options-rectangle-stroke-alignment">Stroke Alignment</label>
-                        <select v-model="options.rectangle.stroke.alignment">
-                            <option value="inner">Inner</option>
-                            <option value="center">Center</option>
-                            <option value="outer">Outer</option>
-                        </select>
-                    </div>
-                    <div class="option">
-                        <label for="options-rectangle-stroke-width">Stroke width</label>
-                        <input type="number" id="options-rectangle-stroke-width" v-model="options.rectangle.stroke.width" />
+                    <div class="option" id="scaleOptions">
+                        <span>
+                            <label for="options-image-scaleX">Scale X </label>
+                            <input type="text" size="13" id="options-image-scaleX" v-model="options.image.scale.x" />
+                        </span>
+                        <span>
+                            <label for="options-image-scaleY">Scale Y </label>
+                            <input type="text" size="13" id="options-image-scaleY" v-model="options.image.scale.y" />
+                        </span>
                     </div>
                 </div>
                 <div class="option-group" name="General" >
@@ -71,21 +95,21 @@
 <script lang="ts">
 import {defineComponent} from "vue"
 import _ from "lodash"
-import { DynamicCanvas, DCScale, DCStroke} from "./model/DynamicCanvas"
-import DCRectangle from "./model/DCRectangle"
-import {DCBasis} from "./model/DCBasis"
+import { DynamicCanvas, DCScale} from "./model/DynamicCanvas"
+import DCImage from "./model/DCImage"
 
 
 interface Options {
     width: number
     height: number,
-    rectangle: {
+    image: {
+        x:number
+        y:number
         width: number
         height: number
         angle: number
-        fill: string
+        src: string
         scale: DCScale,
-        stroke: DCStroke
         originX: string | number
         originY: string | number
     }
@@ -99,25 +123,20 @@ export default defineComponent ({
             options: {
                 width: 400,
                 height: 400,
-                rectangle: {
+                image: {
                     x: 0,
                     y: 0,
                     width: 50,
                     height: 50,
                     angle: 0,
                     scale: {x: 1, y: 1},
-                    fill: "#58f208",
-                    stroke: {
-                        color: "#f09",
-                        width: 100,
-                        alignment: "inner"
-                    },
+                    src: "",
                     originX: "0",
                     originY: "center"
                 }
             } as Options,
             dynamicCanvas: undefined as DynamicCanvas | undefined,
-            rectangle: undefined as DCRectangle | undefined,
+            image: undefined as DCImage | undefined,
             ignoreOptionsUpdate: true,
         }
     },
@@ -155,43 +174,41 @@ export default defineComponent ({
         },
         "options.width": {
             handler(val) {
-                if (this.dynamicCanvas && this.rectangle) {
+                if (this.dynamicCanvas && this.image) {
                     this.dynamicCanvas.width = val
-                    this.rectangle.x = val / 2
-                    this.rectangle.updateOrigin()
+                    this.image.x = val / 2
+                    this.image.updateOrigin()
                 }
             }
         },
         "options.height": {
             handler(val) {
-                if (this.dynamicCanvas && this.rectangle) {
+                if (this.dynamicCanvas && this.image) {
                     this.dynamicCanvas.height = val
-                    this.rectangle.y = val / 2
-                    this.rectangle.updateOrigin()
+                    this.image.y = val / 2
+                    this.image.updateOrigin()
                 }
             }
         },
-        "options.rectangle": {
+        "options.image": {
             handler(val) {
-                if (this.dynamicCanvas && this.rectangle) {
-                    this.rectangle.width = val.width
-                    this.rectangle.height = val.height
-                    this.rectangle.fill = val.fill
-                    this.rectangle.x = this.dynamicCanvas.width / 2
-                    this.rectangle.y = this.dynamicCanvas.height / 2
-                    this.rectangle.stroke = val.stroke
-                    this.rectangle.angle = val.angle
-                    console.log("val.scale",val.scale,val)
-                    this.rectangle.scale = val.scale
+                if (this.dynamicCanvas && this.image) {
+                    this.image.width = val.width
+                    this.image.height = val.height
+                    this.image.x = val.x
+                    this.image.y = val.y
+                    this.image.angle = val.angle
+                    this.image.scale = val.scale
+                    this.image.src = val.src
 
                     if ((!isNaN(parseInt(val.originX)) || ["center", "top", "bottom", "left", "right"].includes(val.originX)) &&
                         (!isNaN(parseInt(val.originY)) || ["center", "top", "bottom", "left", "right"].includes(val.originY))) {
-                        this.rectangle.origin = `${val.originX} ${val.originY}`
+                        this.image.origin = `${val.originX} ${val.originY}`
                     }
                 }
             },
             deep: true
-        }
+        },
     },
     mounted() {
 
@@ -204,21 +221,20 @@ export default defineComponent ({
                 height: this.options.height
             })
 
-            this.rectangle = new DCRectangle(this.dynamicCanvas.canvas, {
-                x: 0, 
-                y: 0, 
-                angle: this.options.rectangle.angle,
+            this.image = new DCImage(this.dynamicCanvas.canvas, {
+                x: this.options.image.x, 
+                y: this.options.image.y, 
+                angle: this.options.image.angle,
                 width: this.dynamicCanvas.width, 
                 height: this.dynamicCanvas.height, 
-                scale: this.options.rectangle.scale,
+                scale: this.options.image.scale,
                 origin: "center center",
-                fill: this.options.rectangle.fill,
-                stroke: this.options.rectangle.stroke
+                src: this.options.image.src,
             })
 
-            console.log("Rectangle", this.rectangle)
+            console.log("Image", this.image)
 
-            this.dynamicCanvas.elements.push(this.rectangle)
+            this.dynamicCanvas.layers.push(this.image)
         }
     },
     unmounted() {
@@ -246,26 +262,54 @@ export default defineComponent ({
             this.options = {
                 width: 400,
                 height: 400,
-                rectangle: {
-                    width: 16,
-                    height: 16,
+                image: {
+                    x: 0,
+                    y: 0,
+                    width: 200,
+                    height: 200,
                     scale: {x:1 , y: 1},
                     angle: 0,
-                    fill: "#58f208",
-                    stroke: {
-                        color: "#f09",
-                        width: 8,
-                        alignment: "outer"
-                    },
+                    src: "",
                     originX: "center",
                     originY: "center"
                 }
             }
         },
+        processImage(e:Event) {
+            const target = e.target as HTMLInputElement
+            const file = target.files?.[0]
+            if (file) {
+                const reader = new FileReader()
+                reader.onload = (e) => {
+                    const img = new Image()
+                    img.onload = () => {
+                        this.options.image.width = img.width
+                        this.options.image.height = img.height
+                        this.options.image.src = img.src
+                    }
+                    img.src = e.target?.result as string
+                }
+                reader.readAsDataURL(file)
+            }
+        }
     }
 })
 </script>
 
 
 <style lang="scss" scoped>
+#posOptions,
+#scaleOptions,
+#sizeOptions,
+#originOptions {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 16px;
+    > span {
+        display: inline-block;
+        flex: 1;
+    }
+}
 </style>

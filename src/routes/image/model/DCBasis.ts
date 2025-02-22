@@ -103,7 +103,6 @@ export abstract class DCBasis {
                 return this._scale
             },
             set(value) {
-                console.log("Setting scale", value)
                 if (typeof value === "object" && (value.x || value.y)) {
                     this._scale = {...this._scale, ...value}
                 }
@@ -146,14 +145,12 @@ export abstract class DCBasis {
     rotateCanvas() {
         let x = this.x 
         let y = this.y
-
-        this.context.setTransform(1, 0, 0, 1, 0, 0); // Resets the transformation matrix
         
         // Change the origin point for rotating
         this.context.translate(x, y);
 
         // Rotate to the new angle
-        this.context.rotate(this._angle * Math.PI / 180);
+        this.context.rotate(this.angle * Math.PI / 180);
         
         // Move the origin back (so rotation doesn't affect positioning)
         this.context.translate(-x, -y);
@@ -163,8 +160,6 @@ export abstract class DCBasis {
         let x = this.x;
         let y = this.y;
 
-        // Reset transformations before applying new scaling
-        this.context.setTransform(1, 0, 0, 1, 0, 0);
 
         // Move origin to the object's position
         this.context.translate(x, y);

@@ -1,4 +1,5 @@
 import { DCRectangle } from "./DCRectangle"
+import { DCImage } from "./DCImage"
 
 export interface DynamicCanvasOptions {
     width?: number
@@ -22,13 +23,13 @@ export interface DCScale {
 export class DynamicCanvas {
     canvas: HTMLCanvasElement
     context: CanvasRenderingContext2D
-    elements: Array<DCRectangle>
+    layers: Array<DCRectangle | DCImage>
     width: number
     height: number
     constructor(targetElement: HTMLElement, options?: DynamicCanvasOptions) {
         this.canvas = targetElement.tagName !== "CANVAS" ? document.createElement("canvas") : targetElement as HTMLCanvasElement
         this.context = this.canvas.getContext("2d") as CanvasRenderingContext2D
-        this.elements = []
+        this.layers = []
 
         this.width = this.canvas.width
         this.height = this.canvas.height
@@ -66,8 +67,8 @@ export class DynamicCanvas {
     }   
     #draw() {
         this.context.clearRect(0, 0, this.width, this.height)
-        this.elements.forEach((element) => {
-            element.draw(this.context)
+        this.layers.forEach((element) => {
+            element._draw(this.context)
         })
         
         requestAnimationFrame(() => this.#draw()) 

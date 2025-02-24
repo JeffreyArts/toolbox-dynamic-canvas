@@ -2,6 +2,7 @@ import DrawingRectangle from "./drawing-rectangle.vue"
 import RotatingRectangle from "./rotating-rectangle.vue"
 import ScalingRectangle from "./scaling-rectangle.vue"
 import Image from "./image/image.vue"
+import ImageFlip from "./image-flip/image-flip.vue"
 import DynamicCanvas from "./dynamic-canvas.vue"
 import Home from "./home.vue"
 import OptionsOverview from "./options-overview.vue"
@@ -37,6 +38,11 @@ const routes = [
         path: "/image",
         name: "Image",
         component: Image
+    },
+    {
+        path: "/image-flip",
+        name: "Image flip",
+        component: ImageFlip
     },
     {
         path: "/options-overview",

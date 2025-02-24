@@ -1,4 +1,4 @@
-import { DCScale, DCOriginName, DynamicCanvas } from "./DynamicCanvas"
+import { DCScale, DCFlip, DCOriginName, DynamicCanvas } from "./DynamicCanvas"
 
 export interface DCBasisOptions {
     x?: number
@@ -7,6 +7,7 @@ export interface DCBasisOptions {
     height?: number
     angle?: number
     scale?: Partial<DCScale>
+    flip?: Partial<DCFlip>
     origin?: string
 }
 
@@ -23,6 +24,8 @@ export abstract class DCBasis {
     _scale: DCScale
     origin: string
     _origin: string
+    flip: DCFlip
+    _flip: DCFlip
     originValue: {
         x: number
         y: number
@@ -50,6 +53,12 @@ export abstract class DCBasis {
         this.origin = this._origin
         this.originValue = {x: 0, y: 0}
         this.setOrigin()
+
+        this._flip = {
+            horizontal: typeof options.flip?.horizontal === "boolean" ?  options.flip.horizontal : false,
+            vertical: typeof options.flip?.vertical === "boolean" ?  options.flip.vertical : false
+        }
+        this.flip = this._flip
 
 
         if (canvas instanceof HTMLCanvasElement) {
@@ -118,6 +127,16 @@ export abstract class DCBasis {
                 this.setOrigin()
             }
         })
+
+        Object.defineProperty(this, "flip", {
+            get() {
+                return this._flip
+            },
+            set(value) {
+                this._flip = value
+                this.flipCanvas()
+            }
+        })
     }
     
     abstract draw(context: CanvasRenderingContext2D): void; // Subclasses must implement this
@@ -160,17 +179,20 @@ export abstract class DCBasis {
     scaleCanvas() {
         let x = this.x;
         let y = this.y;
+        let scaleX = this.flip.horizontal ? -this.scale.x : this.scale.x;
+        let scaleY = this.flip.vertical ? -this.scale.y : this.scale.y;
 
 
         // Move origin to the object's position
         this.context.translate(x, y);
 
         // Apply scaling
-        this.context.scale(this.scale.x, this.scale.y);
+        this.context.scale(scaleX, scaleY);
 
         // Move origin back
         this.context.translate(-x, -y);
     }
+    
 
     setOriginParser(name: DCOriginName, pos: number) {
         if (name.toLowerCase() === "center") {

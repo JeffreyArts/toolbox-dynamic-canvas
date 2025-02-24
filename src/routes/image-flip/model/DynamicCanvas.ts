@@ -19,6 +19,11 @@ export interface DCScale {
     y: number
 }
 
+export interface DCFlip {
+    horizontal: boolean
+    vertical: boolean
+}
+
 
 export class DynamicCanvas {
     canvas: HTMLCanvasElement

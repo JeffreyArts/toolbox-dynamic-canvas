@@ -59,6 +59,24 @@
                         <!-- optional number display-->
                         <input type="number"  min="0" max="360" step="1" v-model="options.image.angle">
                     </div>
+                    
+                    <div class="option">
+                        <label>Flip</label>
+                        <span>
+                            <input type="checkbox" id="checkbox-v0" :checked="options.image.flipHor" v-on:input="options.image.flipHor=!options.image.flipHor">
+                            <label for="checkbox-v0">
+                                Horizontal
+                            </label>
+                        </span>
+
+                        <span>
+                            <input type="checkbox" id="checkbox-v1" :checked="options.image.flipVert" v-on:input="options.image.flipVert=!options.image.flipVert">
+                            <label for="checkbox-v1">
+                                Vertical
+                            </label>
+                        </span>
+                    </div>
+
                     <div class="option" id="originOptions">
                         <span>
                             <label for="options-image-originX">Origin X <i class="info"><span class="info-icon">?</span><span class="info-details">Use left, center, right or a number </span></i></label>
@@ -72,11 +90,11 @@
                     <div class="option" id="scaleOptions">
                         <span>
                             <label for="options-image-scaleX">Scale X </label>
-                            <input type="text" size="13" id="options-image-scaleX" v-model="options.image.scale.x" />
+                            <input type="number" step=".25" size="13" id="options-image-scaleX" v-model="options.image.scale.x" />
                         </span>
                         <span>
                             <label for="options-image-scaleY">Scale Y </label>
-                            <input type="text" size="13" id="options-image-scaleY" v-model="options.image.scale.y" />
+                            <input type="number" step=".25" size="13" id="options-image-scaleY" v-model="options.image.scale.y" />
                         </span>
                     </div>
                 </div>
@@ -112,6 +130,8 @@ interface Options {
         scale: DCScale,
         originX: string | number
         originY: string | number
+        flipHor: boolean
+        flipVert: boolean
     }
 }
 
@@ -132,7 +152,9 @@ export default defineComponent ({
                     scale: {x: 1, y: 1},
                     src: "",
                     originX: "0",
-                    originY: "center"
+                    originY: "center",
+                    flipHor: false,
+                    flipVert: false,
                 }
             } as Options,
             dynamicCanvas: undefined as DynamicCanvas | undefined,
@@ -200,6 +222,8 @@ export default defineComponent ({
                     this.image.angle = val.angle
                     this.image.scale = val.scale
                     this.image.src = val.src
+                    this.image.flip.horizontal = val.flipHor
+                    this.image.flip.vertical = val.flipVert
 
                     if ((!isNaN(parseInt(val.originX)) || ["center", "top", "bottom", "left", "right"].includes(val.originX)) &&
                         (!isNaN(parseInt(val.originY)) || ["center", "top", "bottom", "left", "right"].includes(val.originY))) {

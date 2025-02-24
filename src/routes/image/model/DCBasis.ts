@@ -130,7 +130,8 @@ export abstract class DCBasis {
 
         // Clear the internal context before drawing
         this.context.setTransform(1, 0, 0, 1, 0, 0);
-        this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        // Using the addition of one, makes sure that the lines that sometimes appear on the edges of the canvas are being cleared for sure
+        this.context.clearRect(-1, -1, this.canvas.width+1, this.canvas.height+1);
 
         this.rotateCanvas()
         this.scaleCanvas()

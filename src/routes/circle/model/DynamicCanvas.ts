@@ -24,6 +24,12 @@ export interface DCFlip {
     vertical: boolean
 }
 
+export interface DCGradient {
+    type: "linear" | "radial"
+    colors: Array<{ color: string, offset: number }> | Array<string>
+    angle?: number
+}
+
 
 export class DynamicCanvas {
     canvas: HTMLCanvasElement

@@ -1,4 +1,4 @@
-import { DCScale, DCStroke, DCOriginName, DynamicCanvas } from "./DynamicCanvas"
+import { DCScale, DCStroke, DCGradient, DynamicCanvas } from "./DynamicCanvas"
 import { DCBasis } from "./DCBasis"
 
 export interface DCEllipseOptions {
@@ -6,7 +6,7 @@ export interface DCEllipseOptions {
     y?: number
     width?: number
     height?: number
-    fill?: string
+    fill?: string | DCGradient
     angle?: number
     scale?: Partial<DCScale>
     stroke?: Partial<DCStroke>
@@ -14,7 +14,7 @@ export interface DCEllipseOptions {
 }
 
 export class DCEllipse extends DCBasis {
-    fill: string
+    fill: string | DCGradient
     stroke: DCStroke
 
     constructor(canvas: HTMLCanvasElement | DynamicCanvas, options: DCEllipseOptions) {
@@ -53,7 +53,10 @@ export class DCEllipse extends DCBasis {
     
         // Draw the ellipse
         this.context.ellipse(x + width, y + height, radiusX, radiusY, 0, 0, Math.PI * 2);
-        this.context.fillStyle = this.fill;
+       
+        this.processFillStyle()
+        
+
         this.context.fill();
     
         // Apply stroke

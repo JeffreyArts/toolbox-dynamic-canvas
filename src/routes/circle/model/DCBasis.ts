@@ -193,6 +193,54 @@ export abstract class DCBasis {
         this.context.translate(-x, -y);
     }
     
+    processFillStyle() {
+        if (typeof this.fill === "object") {
+            if (this.fill.type === "linear") { 
+                let angle = (this.fill.angle || 0) * (Math.PI / 180); // Convert degrees to radians
+        
+                // Adjust x and y based on the origin
+                const xBase = this.x - this.originValue.x + this.width / 2;  // Move to center
+                const yBase = this.y - this.originValue.y + this.height / 2; // Move to center
+        
+                // Calculate gradient start and end points based on the center
+                const halfDiagonal = Math.max(this.width, this.height); // Extend for full coverage
+        
+                const x1 = xBase - (halfDiagonal / 2) * Math.cos(angle);
+                const y1 = yBase - (halfDiagonal / 2) * Math.sin(angle);
+                const x2 = xBase + (halfDiagonal / 2) * Math.cos(angle);
+                const y2 = yBase + (halfDiagonal / 2) * Math.sin(angle);
+        
+                var gradient = this.context.createLinearGradient(x1, y1, x2, y2);
+        
+            } else if (this.fill.type === "radial") {
+                // Get center point of the shape
+                const xCenter = this.x - this.originValue.x + this.width / 2;
+                const yCenter = this.y - this.originValue.y + this.height / 2;
+        
+                // Define radii
+                const r0 = 0; // Start with a tiny inner radius
+                const r1 = Math.max(this.width, this.height) / 2; // Outer radius to cover entire shape
+                console.log(xCenter, yCenter, r0, r1)
+                var gradient = this.context.createRadialGradient(xCenter, yCenter, r0, xCenter, yCenter, r1);
+            }
+        
+            // Apply colors to the gradient
+            if (gradient && this.fill.colors) {
+                this.fill.colors.forEach((color, index) => {
+                    if (typeof color === "string") {
+                        gradient.addColorStop(index / (this.fill.colors.length - 1), color);
+                    } else {
+                        gradient.addColorStop(color.offset, color.color);
+                    }
+                });
+                this.context.fillStyle = gradient;
+            }
+        } else if (this.fill) {
+            this.context.fillStyle = this.fill;
+        } else {
+            this.context.fillStyle = "transparent";
+        }
+    }
 
     setOriginParser(name: DCOriginName, pos: number) {
         if (name.toLowerCase() === "center") {

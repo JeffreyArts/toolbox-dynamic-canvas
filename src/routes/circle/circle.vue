@@ -71,16 +71,20 @@
 
                     <div class="option __isGroup">
                         <span>
-                            <label for="options-circle-stroke-width">Stroke width</label>
-                            <input type="number" size="10" id="options-circle-stroke-width" v-model="options.circle.stroke.width" />
-                        </span>
-                        <span>
-                            <label for="options-circle-stroke-alignment">Alignment</label>
-                            <select v-model="options.circle.stroke.alignment">
-                                <option value="inner">Inner</option>
-                                <option value="center">Center</option>
-                                <option value="outer">Outer</option>
+                            <label for="options-circle-gradient">Gradient</label>
+                            <select v-model="options.circle.fill.type">
+                                <option value="linear">Linear</option>
+                                <option value="radial">Radial</option>
+                                <option value="solid">Solid</option>
                             </select>
+                        </span>
+                        <span v-if="options.circle.fill.type == 'linear'">
+                            <label for="range">
+                                Angle
+                            </label>
+                            <input type="range" id="angle" min="0" max="360" step="1" v-model="options.circle.fill.angle">
+                            <!-- optional number display-->
+                            <input type="number"  min="0" max="360" step="1" v-model="options.circle.fill.angle">
                         </span>
                     </div>
                 </div>
@@ -99,7 +103,7 @@
 <script lang="ts">
 import {defineComponent} from "vue"
 import _ from "lodash"
-import { DynamicCanvas, DCScale, DCStroke} from "./model/DynamicCanvas"
+import { DynamicCanvas, DCScale, DCGradient, DCStroke} from "./model/DynamicCanvas"
 import DCCircle from "./model/DCCircle"
 
 
@@ -113,8 +117,8 @@ interface Options {
         radius: number
         angle: number
         scale: DCScale,
-        fill: string
-        stroke: DCStroke
+        fill: string | DCGradient
+        // stroke: DCStroke
         originX: string | number
         originY: string | number
     }
@@ -133,12 +137,15 @@ export default defineComponent ({
                     y: 200,
                     diameter: 200,
                     radius: 100,
-                    fill: "#58f208",
-                    stroke: {
-                        color: "#f09",
-                        width: 10,
-                        alignment: "outer"
+                    fill: {
+                        type: "linear",
+                        colors: ["#58f208","#7202ac"]
                     },
+                    // stroke: {
+                    //     color: "#f09",
+                    //     width: 10,
+                    //     alignment: "outer"
+                    // },
                     scale: {x: 1, y: 1},
                     originX: "center",
                     originY: "center"
@@ -210,7 +217,13 @@ export default defineComponent ({
                     this.circle.radius = val.radius
                     this.circle.angle = val.angle
                     this.circle.scale = val.scale
-                    this.circle.fill = val.fill
+
+                    if (val.fill.type == "solid") {
+                        this.circle.fill = val.fill.colors[0]
+                    } else {
+                        this.circle.fill = val.fill
+                    }
+
                     this.circle.stroke = val.stroke
 
                     if ((!isNaN(parseInt(val.originX)) || ["center", "top", "bottom", "left", "right"].includes(val.originX)) &&
@@ -294,11 +307,10 @@ export default defineComponent ({
                     diameter: 200,
                     radius: 100,
                     angle: 0,
-                    fill: "#58f208",
-                    stroke: {
-                        color: "#f09",
-                        width: 10,
-                        alignment: "outer"
+                    fill: {
+                        type: "linear",
+                        angle: 0,
+                        colors: ["#58f208","#7202ac"]
                     },
                     scale: {x: 1, y: 1},
                     originX: "center",

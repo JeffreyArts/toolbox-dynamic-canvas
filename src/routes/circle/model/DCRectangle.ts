@@ -1,4 +1,4 @@
-import { DCScale, DCStroke, DCOriginName, DynamicCanvas } from "./DynamicCanvas"
+import { DCScale, DCStroke, DCGradient, DynamicCanvas } from "./DynamicCanvas"
 import { DCBasis } from "./DCBasis"
 
 export interface DCRectangleOptions {
@@ -6,7 +6,7 @@ export interface DCRectangleOptions {
     y?: number
     width?: number
     height?: number
-    fill?: string
+    fill?: string | DCGradient
     angle?: number
     scale?: Partial<DCScale>
     stroke?: Partial<DCStroke>
@@ -14,7 +14,7 @@ export interface DCRectangleOptions {
 }
 
 export class DCRectangle extends DCBasis {
-    fill: string
+    fill?: string | DCGradient
     stroke: DCStroke
 
     constructor(canvas: HTMLCanvasElement | DynamicCanvas, options: DCRectangleOptions) {
@@ -35,7 +35,8 @@ export class DCRectangle extends DCBasis {
         let width = this.width;
         let height = this.height;
 
-        this.context.fillStyle = this.fill;
+        this.processFillStyle()
+
         this.context.fillRect(x, y, width, height);
 
         if (this.stroke.width > 0) {

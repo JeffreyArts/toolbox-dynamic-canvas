@@ -1,7 +1,7 @@
 import { DCScale, DCStroke, DynamicCanvas } from "./DynamicCanvas"
 import { DCRectangle } from "./DCRectangle"
 
-export interface DCRectangleOptions {
+export interface DCSquareOptions {
     size: number
     x?: number
     y?: number
@@ -15,7 +15,7 @@ export interface DCRectangleOptions {
 export class DCSquare extends DCRectangle {
     size: number
 
-    constructor(canvas: HTMLCanvasElement | DynamicCanvas, options: DCRectangleOptions) {
+    constructor(canvas: HTMLCanvasElement | DynamicCanvas, options: DCSquareOptions) {
         super(canvas, options);
         this.size = options.size
         

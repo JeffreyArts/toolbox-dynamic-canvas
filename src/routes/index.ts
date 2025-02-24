@@ -4,6 +4,7 @@ import ScalingRectangle from "./scaling-rectangle.vue"
 import Image from "./image/image.vue"
 import ImageFlip from "./image-flip/image-flip.vue"
 import Square from "./square/square.vue"
+import Circle from "./circle/circle.vue"
 import DynamicCanvas from "./dynamic-canvas.vue"
 import Home from "./home.vue"
 import OptionsOverview from "./options-overview.vue"
@@ -49,6 +50,11 @@ const routes = [
         path: "/square",
         name: "Square",
         component: Square
+    },
+    {
+        path: "/circle",
+        name: "Circle",
+        component: Circle
     },
     {
         path: "/options-overview",

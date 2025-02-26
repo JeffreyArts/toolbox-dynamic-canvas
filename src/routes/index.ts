@@ -6,6 +6,7 @@ import ImageFlip from "./image-flip/image-flip.vue"
 import Square from "./square/square.vue"
 import Circle from "./circle/circle.vue"
 import Zoom from "./zoom/zoom.vue"
+import StreetRacer from "./street-racer/street-racer.vue"
 import DynamicCanvas from "./dynamic-canvas.vue"
 import Home from "./home.vue"
 import OptionsOverview from "./options-overview.vue"
@@ -61,6 +62,11 @@ const routes = [
         path: "/zoom",
         name: "Zoom",
         component: Zoom
+    },
+    {
+        path: "/street-racer",
+        name: "Street racer",
+        component: StreetRacer
     },
     {
         path: "/options-overview",

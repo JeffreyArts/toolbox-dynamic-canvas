@@ -30,7 +30,8 @@
                     <div class="option">
                         <span>
                             <label for="options-zoom">Zoom</label>
-                            <input type="number" size="10" step=".1" id="options-zoom" v-model="options.zoom" />
+                            <input type="number" size="10" step=".1" id="options-zoom" v-if="typeof options.zoom == 'number'" v-model="options.zoom"/>
+                            <input type="number" size="10" step=".1" id="options-zoom" v-if="typeof options.zoom == 'object'" v-model="options.zoom.zoom"/>
                         </span>
                     </div>
                 </div>
@@ -51,12 +52,13 @@ import {defineComponent} from "vue"
 import _ from "lodash"
 import { DynamicCanvas, DCScale, DCGradient, DCStroke} from "./model/DynamicCanvas"
 import DCCircle from "./model/DCCircle"
+import DCUZoom from "./model/DCUZoom"
 
 
 interface Options {
     width: number
     height: number,
-    zoom: number,
+    zoom: number | DCUZoom,
 }
 
 export default defineComponent ({ 
@@ -67,7 +69,7 @@ export default defineComponent ({
             options: {
                 width: 400,
                 height: 400,
-                zoom: 1
+                zoom: 1 // Will be replaced by DCUZoom when canvas is created
             } as Options,
             lastTouchDistance: null as number | null,
             dynamicCanvas: undefined as DynamicCanvas | undefined,
@@ -135,16 +137,8 @@ export default defineComponent ({
 
         const canvas = this.$refs['targetCanvas'] as HTMLCanvasElement
         if (canvas) {
-
-            // Mouse wheel zoom
-            canvas.addEventListener("wheel", this.handleWheelZoom)
-
-            // Touch zoom (pinch gesture)
-            canvas.addEventListener("touchstart", this.handleTouchStart)
-            canvas.addEventListener("touchmove", this.handleTouchMove)
-            canvas.addEventListener("touchend", () => this.lastTouchDistance = null);
-
-
+            const zoomObject = new DCUZoom(canvas, {min: 0, max: 10})
+            this.options.zoom = zoomObject
             this.dynamicCanvas = new DynamicCanvas(canvas, {
                 width: this.options.width,
                 height: this.options.height,
@@ -169,48 +163,6 @@ export default defineComponent ({
         //
     },
     methods: {
-        // Zoom event handlers
-        handleWheelZoom(event) {
-            event.preventDefault();
-
-            const zoomSpeed = 0.1; // Adjust zoom sensitivity
-            const scaleFactor = event.deltaY < 0 ? 1 + zoomSpeed : 1 - zoomSpeed;
-            this.updateZoom(scaleFactor, event.clientX, event.clientY);
-        },
-        updateZoom(scaleFactor, x, y) {
-            const newZoom = Math.min(Math.max(this.options.zoom * scaleFactor, 0.1), 5);
-            console.log("newZoom.scaleFactor", scaleFactor)
-            // Update zoom level
-            this.options.zoom = newZoom;
-            
-            console.log(`Zoom updated: ${this.options.zoom}`);
-        },
-        getTouchDistance(touches) {
-            const dx = touches[0].clientX - touches[1].clientX;
-            const dy = touches[0].clientY - touches[1].clientY;
-            return Math.sqrt(dx * dx + dy * dy);
-        },
-        handleTouchMove(event) {
-            if (event.touches.length === 2) {
-                event.preventDefault();
-
-                const newDistance = this.getTouchDistance(event.touches);
-                if (this.lastTouchDistance) {
-                    const scaleFactor = newDistance / this.lastTouchDistance;
-                    this.updateZoom(scaleFactor, event.touches[0].clientX, event.touches[0].clientY);
-                }
-                this.lastTouchDistance = newDistance;
-            }
-        },
-        handleTouchStart(event) {
-            if (event.touches.length === 2) {
-                this.lastTouchDistance = this.getTouchDistance(event.touches);
-            }
-        },
-
-
-
-
 
         // Normal methods
         loadOptions() {
@@ -234,7 +186,7 @@ export default defineComponent ({
             this.options = {
                 width: 400,
                 height: 400,
-                zoom: 1
+                zoom: this.dynamicCanvas ? new DCUZoom(this.dynamicCanvas.canvas, {}) : 1
             }
         }
     }

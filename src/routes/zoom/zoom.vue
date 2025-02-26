@@ -1,7 +1,7 @@
 <template>
     <div class="options-overview">
         <header class="title">
-            <h1>Circle</h1>
+            <h1>Zoom</h1>
         </header>
 
         <hr>
@@ -31,7 +31,7 @@
                         <span>
                             <label for="options-zoom">Zoom</label>
                             <input type="number" size="10" step=".1" id="options-zoom" v-if="typeof options.zoom == 'number'" v-model="options.zoom"/>
-                            <input type="number" size="10" step=".1" id="options-zoom" v-if="typeof options.zoom == 'object'" v-model="options.zoom.zoom"/>
+                            <input type="number" size="10" step=".1" id="options-zoom" v-if="typeof options.zoom == 'object'" v-model="options.zoom.level"/>
                         </span>
                     </div>
                 </div>

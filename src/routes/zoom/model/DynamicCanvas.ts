@@ -113,7 +113,7 @@ export class DynamicCanvas {
     }   
     updateZoom() {
         // Only update zoom if it has changed
-        if ((typeof this.zoom === "number" && this._prevZoom === this.zoom) || (typeof this.zoom === "object" && this._prevZoom === this.zoom.zoom)) {
+        if ((typeof this.zoom === "number" && this._prevZoom === this.zoom) || (typeof this.zoom === "object" && this._prevZoom === this.zoom.level)) {
             return
         } 
             
@@ -127,14 +127,14 @@ export class DynamicCanvas {
         if (typeof this.zoom === "number") {
             this.context.scale(this.zoom, this.zoom);
         } else {
-            this.context.scale(this.zoom.zoom, this.zoom.zoom);
+            this.context.scale(this.zoom.level, this.zoom.level);
         }
         this.context.translate(-x, -y);
 
         if (typeof this.zoom === "number") {
             this._prevZoom = this.zoom
         } else {
-            this._prevZoom = this.zoom.zoom
+            this._prevZoom = this.zoom.level
         }
     }
     #draw() {

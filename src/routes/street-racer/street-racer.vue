@@ -60,10 +60,10 @@ export default defineComponent({
 
             // Set player
             this.cigaretta = new DCImage(this.dynamicCanvas.canvas, {
-                x: this.dynamicCanvas.width / 2,
-                y: this.dynamicCanvas.height / 2,
+                x: 700,
+                y: 2820/2,
                 scale: .75,
-                angle: 90,
+                angle: 184,
                 origin: "center center",
                 src: "/assets/street-racer/cigaretta.png",
             });

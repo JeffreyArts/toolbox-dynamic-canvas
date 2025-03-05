@@ -15,38 +15,32 @@ export interface DCImageOptions {
 
 export class DCImage extends DCBasis {
     originalImage: HTMLImageElement | undefined
-    src: string 
+    src: string  
+    _src: string  
     // context: CanvasRenderingContext2D
 
     constructor(canvas: HTMLCanvasElement | DynamicCanvas, options: DCImageOptions) {
         super(canvas, options);
-        this.src = options.src || "";
-        if (this.src) {
-            this.loadImage(this.src);
-        }        
+        this._src = options.src || "";
+        this.src = this._src
 
-        // Create a Proxy to handle changes dynamically
-        return new Proxy(this, {
-            get(target, prop) {
-                if (prop === "src") return target[prop];  // Direct access to src
-                return Reflect.get(target, prop);  // Reflect for other properties
+        // Make radius dynamic
+        Object.defineProperty(this, "src", {
+            get() {
+                return this._src
             },
-            set(target, prop, value) {
-                if (prop === "src" && target[prop] !== value) {
-                    if (value) {
-                        target[prop] = value;  // Set src directly on the target
-                        target.loadImage(value);  // Trigger the image loading
-                    } else {
-                        target.originalImage = undefined;
-                        target[prop] = value;
-                        target.context.clearRect(0, 0, target.canvas.width, target.canvas.width)
-                    }
-                    return true;
-                } 
-                
-                return Reflect.set(target, prop, value);
+            set(value) {
+                this._src = value
+                if (value) {
+                    this._src = value;  // Set src directly on the target
+                    this.loadImage(value);  // Trigger the image loading
+                } else {
+                    this.originalImage = undefined;
+                    this._src = value;
+                    this.context.clearRect(0, 0, this.canvas.width, this.canvas.width)
+                }
             }
-        });
+        })
     }
 
 

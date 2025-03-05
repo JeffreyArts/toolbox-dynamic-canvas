@@ -9,21 +9,31 @@
             <div class="viewport-content" ratio="1x1" >
                 <canvas ref="targetCanvas"></canvas>
             </div>
-            <footer class="viewport-datamodel">
-                <pre>{{ image }}</pre>
+            <footer class="viewport-datamodel" v-if="typeof image == 'object'">
+                <pre>Drawcycle: {{ drawCycle }}</pre>
             </footer>
         </section>
 
         <aside class="sidebar">
             <div class="options">
                 <div class="option-group" name="Canvas" >
-                    <div class="option">
-                        <label for="options-width">Width</label>
-                        <input type="number" id="options-width" v-model="options.width" />
+                    <div class="option __isGroup">
+                        <div>
+                            <label for="options-width">Width</label>
+                            <input type="number" id="options-width" size="8" v-model="options.width" />
+                        </div>
+                        <div>
+                            <label for="options-height">Height</label>
+                            <input type="number" id="options-height" size="8" v-model="options.height" />
+                        </div>
                     </div>
                     <div class="option">
-                        <label for="options-height">Height</label>
-                        <input type="number" id="options-height" v-model="options.height" />
+                        <div>
+                            <input type="checkbox" id="checkbox-v0" :checked="options.image.isStatic" v-model="options.image.isStatic">
+                            <label for="checkbox-v0">
+                                Static
+                            </label>
+                        </div>
                     </div>
                 </div>
                 <div class="option-group" name="Image" >
@@ -104,6 +114,7 @@ interface Options {
         angle: number
         src: string
         scale: DCScale
+        isStatic: boolean
     }
 }
 
@@ -112,6 +123,7 @@ export default defineComponent ({
     props: [],
     data() {
         return {
+            drawCycle: 0,
             options: {
                 width: 400,
                 height: 400,
@@ -122,6 +134,7 @@ export default defineComponent ({
                     height: 50,
                     angle: 0,
                     scale: {x: 1, y: 1},
+                    isStatic: true,
                     src: ""
                 }
             } as Options,
@@ -190,6 +203,7 @@ export default defineComponent ({
                     this.image.angle = val.angle
                     this.image.scale = val.scale
                     this.image.src = val.src
+                    this.image.static = val.isStatic
                 }
             },
             deep: true
@@ -198,6 +212,7 @@ export default defineComponent ({
     mounted() {
 
         this.loadOptions()
+        this.drawCycleUpdate()
 
         const canvas = this.$refs['targetCanvas'] as HTMLCanvasElement
         if (canvas) {
@@ -215,7 +230,7 @@ export default defineComponent ({
                 scale: this.options.image.scale,
                 origin: "center center",
                 src: this.options.image.src,
-                static: true
+                static: this.options.image.isStatic
             })
 
             console.log("Image", this.image)
@@ -255,6 +270,7 @@ export default defineComponent ({
                     height: 200,
                     scale: {x:1 , y: 1},
                     angle: 0,
+                    isStatic: true,
                     src: ""
                 }
             }
@@ -275,13 +291,23 @@ export default defineComponent ({
                 }
                 reader.readAsDataURL(file)
             }
+        },
+        drawCycleUpdate() {
+            requestAnimationFrame(() => {
+                if (this.image) {
+                    this.drawCycle = this.image.drawCycle
+                    this.drawCycleUpdate()
+                }
+            })
         }
+
     }
 })
 </script>
 
 
 <style lang="scss" scoped>
+.__isGroup,
 #posOptions,
 #scaleOptions,
 #sizeOptions,

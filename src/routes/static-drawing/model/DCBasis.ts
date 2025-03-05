@@ -96,7 +96,7 @@ export abstract class DCBasis {
             },
             set(value) {
                 this._static = value
-                this._updateFrame = true
+                this.updateFrame = true
             }
         })
 

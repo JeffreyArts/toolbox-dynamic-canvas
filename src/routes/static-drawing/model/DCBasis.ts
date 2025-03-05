@@ -259,7 +259,6 @@ export abstract class DCBasis {
                 // Define radii
                 const r0 = 0; // Start with a tiny inner radius
                 const r1 = Math.max(this.width, this.height) / 2; // Outer radius to cover entire shape
-                console.log(xCenter, yCenter, r0, r1)
                 gradient = this.context.createRadialGradient(xCenter, yCenter, r0, xCenter, yCenter, r1);
             }
         

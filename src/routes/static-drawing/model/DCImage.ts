@@ -21,8 +21,12 @@ export class DCImage extends DCBasis {
 
     constructor(canvas: HTMLCanvasElement | DynamicCanvas, options: DCImageOptions) {
         super(canvas, options);
+
         this._src = options.src || "";
         this.src = this._src
+        if (this.src) {
+            this.loadImage(this.src);
+        }
 
         // Make radius dynamic
         Object.defineProperty(this, "src", {
@@ -53,6 +57,7 @@ export class DCImage extends DCBasis {
             // this.scale.x = this.width / image.width
             // this.scale.y = this.height / image.height
             this.originalImage = image
+            this.updateFrame = true
         }
     }
 

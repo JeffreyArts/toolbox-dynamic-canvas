@@ -14,7 +14,7 @@ export interface DCRectangleOptions {
 }
 
 export class DCRectangle extends DCBasis {
-    fill?: string | DCGradient
+    fill: string | DCGradient
     stroke: DCStroke
 
     constructor(canvas: HTMLCanvasElement | DynamicCanvas, options: DCRectangleOptions) {
@@ -23,6 +23,25 @@ export class DCRectangle extends DCBasis {
         this.fill = options.fill || "transparent"
         this.stroke = { width: 0, color: "transparent", alignment: "center", ...options.stroke}
 
+        // Proxy handler
+        const handler = {
+            get: (target: DCRectangle, prop: keyof DCRectangle) => {
+                if (prop in target) {
+                    return target[prop];
+                } 
+            },
+            set: (target: DCRectangle, prop: keyof DCRectangle, value:any) => {
+                // Prevent infinite loop
+                if (prop === "updateFrame") {
+                    target.updateFrame = value;
+                    return true
+                } 
+                
+                (target as any)[prop] = value;
+                target.updateFrame = true
+                return true; // Indicate that the set was successful
+            }
+        };
     }
 
     draw(context: CanvasRenderingContext2D) {

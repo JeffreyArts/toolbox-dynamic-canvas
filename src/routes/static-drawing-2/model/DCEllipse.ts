@@ -22,6 +22,26 @@ export class DCEllipse extends DCBasis {
         
         this.fill = options.fill || "transparent";
         this.stroke = { width: 0, color: "transparent", alignment: "center", ...options.stroke };
+
+        // Proxy handler
+        const handler = {
+            get: (target: DCEllipse, prop: keyof DCEllipse) => {
+                if (prop in target) {
+                    return target[prop];
+                } 
+            },
+            set: (target: DCEllipse, prop: keyof DCEllipse, value:any) => {
+                // Prevent infinite loop
+                if (prop === "updateFrame") {
+                    target.updateFrame = value;
+                    return true
+                } 
+                
+                (target as any)[prop] = value;
+                target.updateFrame = true
+                return true; // Indicate that the set was successful
+            }
+        };
     }
 
     draw(context: CanvasRenderingContext2D) {

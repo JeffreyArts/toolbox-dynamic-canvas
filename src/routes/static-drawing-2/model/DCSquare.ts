@@ -19,23 +19,30 @@ export class DCSquare extends DCRectangle {
         super(canvas, options);
         this.size = options.size
         
-        // Create a Proxy to handle changes dynamically
-        return new Proxy(this, {
-            get(target, prop) {
-                if (prop === "size") return target[prop];  // Direct access to src
-                return Reflect.get(target, prop);  // Reflect for other properties
+        // Proxy handler
+        const handler = {
+            get: (target: DCSquare, prop: keyof DCSquare) => {
+                if (prop in target) {
+                    return target[prop];
+                } 
             },
-            set(target, prop, value) {
+            set: (target: DCSquare, prop: keyof DCSquare, value:any) => {
+                // Prevent infinite loop
+                if (prop === "updateFrame") {
+                    target.updateFrame = value;
+                    return true
+                } 
                 if (prop === "size") {
                     target.width = value;
                     target.height = value;
                     return true;
-                } 
+                }
                 
-                return Reflect.set(target, prop, value);
+                (target as any)[prop] = value;
+                target.updateFrame = true
+                return true; // Indicate that the set was successful
             }
-        });
-
+        };
     }
 }
 

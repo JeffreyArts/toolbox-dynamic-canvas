@@ -50,30 +50,43 @@ export class DCCircle extends DCEllipse {
         })
 
 
-        // // Create a Proxy to handle changes dynamically
-        // return new Proxy(this, {
-        //     get(target, prop) {
-        //         return Reflect.get(target, prop);  // Reflect for other properties
-        //     },
-        //     set(target, prop, value) {
-        //         if (prop === "radius") {
-        //             if (target.diameter != target.radius * 2) {
-        //                 target.diameter = target.radius * 2 
-        //             }
-        //             return true
-        //         }
-        //         if (prop === "diameter") {
-        //             if (target.radius != target.diameter / 2) {
-        //                 target.radius = target.diameter / 2
-        //             }
-        //             target.width = target.diameter
-        //             target.height = target.diameter
-        //             return true
-        //         }
+        // Proxy handler
+        const handler = {
+            get: (target: DCCircle, prop: keyof DCCircle) => {
+                // Pretty sure that these prop checks are not needed, but need to test first
+                if (prop === 'radius') {
+                    return target._diameter / 2; // Return radius as half of diameter
+                }
+                if (prop === 'diameter') {
+                    return target._radius * 2; // Return diameter as twice of radius
+                }
                 
-        //         return Reflect.set(target, prop, value);
-        //     }
-        // });
+                // Default behavior for other properties
+                if (prop in target) {
+                    return target[prop];
+                }
+            },
+        
+            set: (target: DCCircle, prop: keyof DCCircle, value: any) => {
+                // Handle setting radius
+                if (prop === 'radius') {
+                    target._radius = value;
+                    target._diameter = value * 2;
+                    target.width = value * 2; 
+                    target.height = value * 2;
+                } else if (prop === 'diameter') {
+                    target._diameter = value;
+                    target._radius = value / 2;
+                    target.width = value; 
+                    target.height = value;
+                } else {
+                    (target as any)[prop] = value;
+                }
+        
+                target.updateFrame = true;
+                return true; 
+            }
+        };        
     }
 }
 

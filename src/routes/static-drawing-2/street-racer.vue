@@ -17,7 +17,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from "vue";
+import { isProxy, toRaw , defineComponent } from "vue";
 import { DynamicCanvas } from "./model/DynamicCanvas";
 import DCImage from "./model/DCImage";
 
@@ -54,7 +54,6 @@ export default defineComponent({
                 width: 1080,
                 height: 1920,
                 origin: "top left",
-                static: true,
                 src: "/assets/street-racer/background.jpg",
             });
             this.dynamicCanvas.layers.push(this.bg);
@@ -67,8 +66,9 @@ export default defineComponent({
                 angle: 184,
                 origin: "center center",
                 src: "/assets/street-racer/cigaretta.png",
-            });
-            console.log(this.cigaretta);
+            })
+            
+            console.log("cigaretta", this.cigaretta)
             this.dynamicCanvas.layers.push(this.cigaretta);
 
             // Add event listeners
@@ -98,7 +98,6 @@ export default defineComponent({
         },
         updateCar() {
             if (!this.cigaretta) return;
-
             let { speed, maxSpeed, acceleration, friction, reverseSpeed, turningSpeed } = this.car;
 
             // Move forward
@@ -119,6 +118,10 @@ export default defineComponent({
                 }
             }
 
+            if (Math.round(speed*1000) == 0) {
+                speed = 0;
+            }
+
             // Turn left
             if (this.keys["ArrowLeft"] && Math.abs(speed) > 0.1) {
                 this.cigaretta.angle -= turningSpeed * (speed / maxSpeed);
@@ -131,8 +134,15 @@ export default defineComponent({
 
             // Convert angle to radians for movement
             const rad = ((this.cigaretta.angle+90) * Math.PI) / 180;
-            this.cigaretta.x += Math.cos(rad) * speed;
-            this.cigaretta.y += Math.sin(rad) * speed;
+            const x = this.cigaretta.x + Math.cos(rad) * speed;
+            const y = this.cigaretta.y + Math.sin(rad) * speed;
+
+            if (x != this.cigaretta.x) {
+                this.cigaretta.x = x;
+            }
+            if (y != this.cigaretta.y) {
+                this.cigaretta.y = y;
+            }
 
             // Store updated speed
             this.car.speed = speed;

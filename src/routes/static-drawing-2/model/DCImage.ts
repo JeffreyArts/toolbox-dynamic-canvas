@@ -27,23 +27,40 @@ export class DCImage extends DCBasis {
             this.loadImage(this.src);
         }
 
-        // Make radius dynamic
-        Object.defineProperty(this, "src", {
-            get() {
-                return this._src
+        // Proxy handler
+        const handler = {
+            get: (target: DCImage, prop: keyof DCImage) => {
+                if (prop in target) {
+                    return target[prop];
+                } 
             },
-            set(value) {
-                this._src = value
-                if (value) {
-                    this._src = value;  // Set src directly on the target
-                    this.loadImage(value);  // Trigger the image loading
+            set: (target: DCImage, prop: keyof DCImage, value:any) => {
+                // Prevent infinite loop
+                if (prop === "updateFrame") {
+                    target.updateFrame = value;
+                    return true
+                } 
+
+                if (prop === 'src') {
+                    // If the property being set is 'src'
+                    target._src = value; // Set _src directly on the target
+                    
+                    if (value) {
+                        target.loadImage(value); // Trigger the image loading
+                    } else {
+                        target.originalImage = undefined;
+                        target.context.clearRect(0, 0, target.canvas.width, target.canvas.height);
+                    }
                 } else {
-                    this.originalImage = undefined;
-                    this._src = value;
-                    this.context.clearRect(0, 0, this.canvas.width, this.canvas.width)
+                    (target as any)[prop] = value;
+                    target.updateFrame = true
                 }
+                return true; // Indicate that the set was successful
             }
-        })
+        };
+
+        // Return the proxy for the instance
+        return new Proxy(this, handler);
     }
 
 

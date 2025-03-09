@@ -102,6 +102,12 @@ export abstract class DCBasis {
                 return target[prop];
             },
             set(target: DCBasis, prop: keyof DCBasis, value: any) {
+                // Prevent infinite loop
+                if (prop === "updateFrame") {
+                    target.updateFrame = value;
+                    return true
+                } 
+
                 if (prop === "width") {
                     target.boundingBox.width = value;
                     target.updateOrigin();
@@ -123,7 +129,7 @@ export abstract class DCBasis {
                     target.setOrigin();
                 } else if (prop === "flip") {
                     target._flip = value;
-                }else {
+                } else {
                     (target as any)[prop] = value;
                 }
                 
@@ -140,7 +146,7 @@ export abstract class DCBasis {
         if (!this.updateFrame) {
             return this.canvas
         }
-console.log("Update frame")
+
         if (!this.context || !this.canvas) {
             throw new Error("Canvas or context is not defined")
         }

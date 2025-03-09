@@ -9,6 +9,7 @@ import Zoom from "./zoom/zoom.vue"
 import StreetRacer from "./street-racer/street-racer.vue"
 import DynamicCanvas from "./dynamic-canvas.vue"
 import StreetRacer2 from "./static-drawing/street-racer.vue"
+import StaticDrawing2 from "./static-drawing-2/static-drawing.vue"
 import Home from "./home.vue"
 import OptionsOverview from "./options-overview.vue"
 import { createWebHistory, createRouter } from "vue-router"
@@ -79,6 +80,11 @@ const routes = [
         path: "/street-racer-2",
         name: "Street racer 2",
         component: StreetRacer2
+    },
+    {
+        path: "/static-drawing-2",
+        name: "Static drawing 2",
+        component: StaticDrawing2
     },
     {
         path: "/options-overview",

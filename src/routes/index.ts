@@ -11,6 +11,7 @@ import DynamicCanvas from "./dynamic-canvas.vue"
 import StreetRacer2 from "./static-drawing/street-racer.vue"
 import StaticDrawing2 from "./static-drawing-2/static-drawing.vue"
 import StreetRacer3 from "./static-drawing-2/street-racer.vue"
+import Drawing1 from "./drawing-1/drawing.vue"
 import Home from "./home.vue"
 import OptionsOverview from "./options-overview.vue"
 import { createWebHistory, createRouter } from "vue-router"
@@ -91,6 +92,11 @@ const routes = [
         path: "/street-racer-3",
         name: "Street racer 3",
         component: StreetRacer3
+    },
+    {
+        path: "/drawing-1",
+        name: "Drawing 1",
+        component: Drawing1
     },
     {
         path: "/options-overview",

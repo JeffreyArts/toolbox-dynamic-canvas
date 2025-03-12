@@ -148,6 +148,9 @@ export class DynamicCanvas {
         this.updateZoom()
 
         this.layers.forEach((element) => {
+            if (!element) {
+                return
+            }
             const canvas = element._draw(this.context)
             if (canvas) {
                 this.context.drawImage(canvas, 0, 0)

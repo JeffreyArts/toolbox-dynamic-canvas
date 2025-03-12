@@ -114,8 +114,7 @@ export abstract class DCBasis {
                     target.updateFrame = value;
                     return true
                 } 
-
-
+                
                 // Prop watchers
                 if (prop === "width") {
                     target.boundingBox.width = value;

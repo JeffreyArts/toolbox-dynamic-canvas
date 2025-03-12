@@ -12,6 +12,7 @@ import StreetRacer2 from "./static-drawing/street-racer.vue"
 import StaticDrawing2 from "./static-drawing-2/static-drawing.vue"
 import StreetRacer3 from "./static-drawing-2/street-racer.vue"
 import Drawing1 from "./drawing-1/drawing.vue"
+import StreetRacer4 from "./drawing-1/street-racer.vue"
 import Home from "./home.vue"
 import OptionsOverview from "./options-overview.vue"
 import { createWebHistory, createRouter } from "vue-router"
@@ -97,6 +98,11 @@ const routes = [
         path: "/drawing-1",
         name: "Drawing 1",
         component: Drawing1
+    },
+    {
+        path: "/street-racer-4",
+        name: "Street racer 4",
+        component: StreetRacer4
     },
     {
         path: "/options-overview",

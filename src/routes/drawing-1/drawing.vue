@@ -56,13 +56,15 @@ import DCCircle from "./model/DCCircle";
 import DCRectangle from "./model/DCRectangle";
 import DCSquare from "./model/DCSquare";
 import DCImage from "./model/DCImage";
-
+let testShape
 export default defineComponent({
     components: {},
     data() {
         return {
             dynamicCanvas: undefined as DynamicCanvas | undefined,
             selectedShape: "",
+            mouseDown: false,
+            newShape: undefined as DCCircle | DCEllipse | DCRectangle | DCSquare | DCImage | undefined,
             selectedShapeObject: undefined as DCCircle | DCEllipse | DCRectangle | DCSquare | DCImage | undefined,
             shapes: [] as Array<DCCircle | DCEllipse | DCRectangle | DCSquare | DCImage>,
             keys: {} as Record<string, boolean>,
@@ -79,10 +81,10 @@ export default defineComponent({
     mounted() {
         const canvas = this.$refs["targetCanvas"] as HTMLCanvasElement;
         if (canvas) {
-            // this.dynamicCanvas = new DynamicCanvas(canvas, {
-            //     width: 1080,
-            //     height: 1920,
-            // });
+            this.dynamicCanvas = new DynamicCanvas(canvas, {
+                width: 400,
+                height: 400,
+            });
 
             this.drawShapeIcon("circle");
             this.drawShapeIcon("ellipse");
@@ -90,11 +92,121 @@ export default defineComponent({
             this.drawShapeIcon("rectangle");
             this.drawShapeIcon("image");
 
+            canvas.addEventListener("mousedown", this.onMouseDown);
+            canvas.addEventListener("mouseup", this.onMouseUp);
+            canvas.addEventListener("mousemove", this.onMouseMove);
         }
     },
     beforeUnmount() {
     },
     methods: {
+        onMouseDown(event: MouseEvent) {
+            this.mouseDown = true;
+            
+
+            this.startDrawing({x: event.offsetX, y: event.offsetY});
+            console.log("Mouse down", event);
+        },
+        onMouseUp(event: MouseEvent) {
+            this.mouseDown = false;
+            console.log("Mouse up", event);
+        },
+        onMouseMove(event: MouseEvent) {
+            const {x,y} = {x: event.offsetX, y: event.offsetY}
+            console.log("Mouse move", this.newShape );
+            if (!this.newShape ) {
+                return
+            }
+            if (this.newShape instanceof DCCircle) {
+                this.drawCircle({x: event.offsetX, y: event.offsetY}) 
+            }
+        },
+        onMouseLeave(event: MouseEvent) {
+            this.mouseDown = false;
+            this.cancelDrawing();
+            console.log("Mouse leave", event);
+        },
+        drawCircle(pos: { x: number, y: number }) {
+            const {x, y} = pos;
+            if (!(this.newShape instanceof DCCircle)) {
+                return;
+            }
+
+            if (this.newShape.x > x && this.newShape.y < y) {
+            this.newShape.origin = "top right";
+            } else if (this.newShape.x < x && this.newShape.y < y) {
+            this.newShape.origin = "top left";
+            } else if (this.newShape.x < x && this.newShape.y > y) {
+            this.newShape.origin = "bottom left";
+            } else if (this.newShape.x > x && this.newShape.y > y) {
+            this.newShape.origin = "bottom right";
+            }
+            this.newShape.diameter = Math.max(Math.abs(x - this.newShape.x), Math.abs(y - this.newShape.y));
+        },
+        startDrawing(pos: { x: number, y: number }) {
+            console.log(pos)
+            if (this.selectedShape == "" || !this.dynamicCanvas) {
+                return;
+            }
+            if (this.selectedShape == "DCCircle") {
+                this.newShape = new DCCircle(this.dynamicCanvas.canvas, {
+                    x: pos.x,
+                    y: pos.y,
+                    diameter: 1,
+                    // width: 1,
+                    // height: 1,
+                    origin: "top left",
+                    stroke: { color: "#04a9cc", width: 1, alignment: "inner" },
+                });
+                this.dynamicCanvas.layers.push(testShape);
+                
+            } else if (this.selectedShape == "DCEllipse") {
+                this.newShape = new DCEllipse(undefined, {
+                    x: pos.x,
+                    y: pos.y,
+                    width: 0,
+                    height: 0,
+                    origin: "top left",
+                    stroke: { color: "#04a9cc", width: 1, alignment: "inner" },
+                });
+            } else if (this.selectedShape == "DCSquare") {
+                this.newShape = new DCSquare(undefined, {
+                    x: pos.x,
+                    y: pos.y,
+                    size: 0,
+                    origin: "top left",
+                    stroke: { color: "#04a9cc", width: 1, alignment: "inner" },
+                });
+            } else if (this.selectedShape == "DCRectangle") {
+                this.newShape = new DCRectangle(undefined, {
+                    x: pos.x,
+                    y: pos.y,
+                    width: 0,
+                    height: 0,
+                    origin: "top left",
+                    stroke: { color: "#04a9cc", width: 1, alignment: "inner" },
+                });
+            } else if (this.selectedShape == "DCImage") {
+                this.newShape = new DCImage(undefined, {
+                    x: pos.x,
+                    y: pos.y,
+                    width: 0,
+                    height: 0,
+                    origin: "top left",
+                    src: "",
+                });
+            }
+            if (this.newShape) {
+                this.dynamicCanvas.layers.push(this.newShape);
+            }
+            
+        },
+        stopDrawing() {
+            console.log("Stop drawing");
+        },
+        cancelDrawing() {
+            console.log("Stop drawing");
+        },
         drawShapeIcon(type: string) {
             let canvas
 

@@ -45,8 +45,20 @@ export class DCCircle extends DCEllipse {
             set(value) {
                 this._radius = value
                 this._diameter = value * 2
-                this.width = value * 2
-                this.height = value * 2
+                this.boundingBox.width = value * 2
+                this.boundingBox.height = value * 2
+            }
+        })
+
+        Object.defineProperty(this, "diameter", {
+            get() {
+                return this._diameter
+            },
+            set(value) {
+                this._diameter = value
+                this._radius = value/2
+                this.boundingBox.width = value
+                this.boundingBox.height = value
             }
         })
 

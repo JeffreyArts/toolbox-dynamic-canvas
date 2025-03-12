@@ -126,19 +126,20 @@ export default defineComponent({
             }
             if (this.newShape instanceof DCCircle) {
                 this.drawCircle({x: event.offsetX, y: event.offsetY, center: !!event.altKey}); 
-            }
+            } else if (this.newShape instanceof DCSquare) {
+                this.drawSquare({x: event.offsetX, y: event.offsetY, center: !!event.altKey}); 
+            } 
         },
         onMouseLeave(event: MouseEvent) {
             this.mouseDown = false;
             this.cancelDrawing();
             console.log("Mouse leave", event);
         },
-        drawCircle(pos: { x: number, y: number, center: boolean }) {
-            const {x, y} = pos;
-            if (!(this.newShape instanceof DCCircle)) {
-                return;
+        updateOrigin(pos: { x: number, y: number }) {
+            if (!this.newShape) {
+                return
             }
-            const radius = Math.max(Math.abs(x - this.newShape.x), Math.abs(y - this.newShape.y))
+            const {x, y} = pos;
 
             if (this.newShape.x > x && this.newShape.y < y) {
                 this.newShape.origin = "top right";
@@ -149,15 +150,36 @@ export default defineComponent({
             } else if (this.newShape.x > x && this.newShape.y > y) {
                 this.newShape.origin = "bottom right";
             }
+        },
+        drawCircle(pos: { x: number, y: number, center: boolean }) {
+            if (!(this.newShape instanceof DCCircle)) {
+                return;
+            }
+            const {x, y} = pos;
+            const radius = Math.max(Math.abs(x - this.newShape.x), Math.abs(y - this.newShape.y))
             this.newShape.diameter = radius;
+            this.updateOrigin(pos);
             
             if (pos.center) {
                 this.newShape.origin = `${radius}px ${radius}px`;
                 this.newShape.diameter = radius*2;
             }
         },
+        drawSquare(pos: { x: number, y: number, center: boolean }) {
+            if (!(this.newShape instanceof DCSquare)) {
+                return;
+            }
+            const {x, y} = pos;
+            const radius = Math.max(Math.abs(x - this.newShape.x), Math.abs(y - this.newShape.y))
+            this.newShape.size = radius;
+            this.updateOrigin(pos);
+            
+            if (pos.center) {
+                this.newShape.origin = `${radius}px ${radius}px`;
+                this.newShape.size = radius*2;
+            }
+        },
         startDrawing(pos: { x: number, y: number }) {
-            console.log(pos)
             if (this.selectedShape == "" || !this.dynamicCanvas) {
                 return;
             }

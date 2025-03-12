@@ -53,6 +53,8 @@ export class DCEllipse extends DCBasis {
         }
     
         // Draw the ellipse
+        if (radiusX <= 0.001) { radiusX = 0.001 }
+        if (radiusY <= 0.001) { radiusY = 0.001 }
         this.context.ellipse(x + width, y + height, radiusX, radiusY, 0, 0, Math.PI * 2);
        
         this.processFillStyle()

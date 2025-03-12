@@ -27,7 +27,7 @@ export class DCCircle extends DCEllipse {
         } else if (options.radius) {
             this._diameter = options.radius * 2
         } else {
-            throw new Error("Diameter or radius is required")
+            this._diameter = 1
         }
 
         this._radius = this._diameter / 2

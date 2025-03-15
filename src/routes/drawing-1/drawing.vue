@@ -34,7 +34,16 @@
                 </div>
                 <div class="option-group" name="Fill" v-if="['DCRectangle', 'DCSquare', 'DCCircle', 'DCEllipse'].includes(selectedShape)">
                     <div class="option __isGroup">
-                        Color
+                        <input type="color" v-model="fillColor" v-if="!isTransparent"/>
+
+                    </div>
+                    <div class="option">
+                        <span>
+                            <input type="checkbox" id="checkbox-isTransparent" v-model="isTransparent" />
+                            <label for="checkbox-isTransparent">
+                                Transparent
+                            </label>
+                        </span>
                     </div>
                 </div>
                 <div class="option-group" name="Stroke" v-if="['DCRectangle', 'DCSquare', 'DCCircle', 'DCEllipse'].includes(selectedShape)">
@@ -63,11 +72,13 @@ export default defineComponent({
         return {
             dynamicCanvas: undefined as DynamicCanvas | undefined,
             selectedShape: "",
+            fillColor: "#fff",
             mouseDown: false,
             newShape: undefined as DCCircle | DCEllipse | DCRectangle | DCSquare | DCImage | undefined,
             selectedShapeObject: undefined as DCCircle | DCEllipse | DCRectangle | DCSquare | DCImage | undefined,
             shapes: [] as Array<DCCircle | DCEllipse | DCRectangle | DCSquare | DCImage>,
             keys: {} as Record<string, boolean>,
+            isTransparent: false,
             car: {
                 speed: 0,
                 maxSpeed: 16,
@@ -103,6 +114,15 @@ export default defineComponent({
         onMouseDown(event: MouseEvent) {
             this.mouseDown = true;
             this.startDrawing({x: event.offsetX, y: event.offsetY});
+
+            if (this.newShape) {
+                if (this.isTransparent) {
+                    this.newShape.fill = "transparent";
+                } else {
+                    this.newShape.fill = this.fillColor;
+                }
+            }
+
             console.log("Mouse down", event);
         },
         onMouseUp(event: MouseEvent) {

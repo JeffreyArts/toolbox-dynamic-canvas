@@ -128,7 +128,11 @@ export default defineComponent({
                 this.drawCircle({x: event.offsetX, y: event.offsetY, center: !!event.altKey}); 
             } else if (this.newShape instanceof DCSquare) {
                 this.drawSquare({x: event.offsetX, y: event.offsetY, center: !!event.altKey}); 
-            } 
+            } else if (this.newShape instanceof DCRectangle) {
+                this.drawRectangle({x: event.offsetX, y: event.offsetY, center: !!event.altKey}); 
+            } else if (this.newShape instanceof DCEllipse) {
+                this.drawEllipse({x: event.offsetX, y: event.offsetY, center: !!event.altKey}); 
+            }
         },
         onMouseLeave(event: MouseEvent) {
             this.mouseDown = false;
@@ -177,6 +181,40 @@ export default defineComponent({
             if (pos.center) {
                 this.newShape.origin = `${radius}px ${radius}px`;
                 this.newShape.size = radius*2;
+            }
+        },
+        drawRectangle(pos: { x: number, y: number, center: boolean}) {
+            if (!(this.newShape instanceof DCRectangle)) {
+                return;
+            }
+            const {x, y, center} = pos;
+            
+            const width = Math.abs(x - this.newShape.x)
+            const height = Math.abs(y - this.newShape.y)
+            this.newShape.width = width;
+            this.newShape.height = height;
+            this.updateOrigin(pos);
+            if (center) {
+                this.newShape.origin = `${width/2}px ${height/2}px`;
+                this.newShape.width = width;
+                this.newShape.height = height;
+            }
+        },
+        drawEllipse(pos: {x: number, y:number, center: boolean}) {
+            if (!(this.newShape instanceof DCEllipse)) {
+                return;
+            }
+            const {x, y, center} = pos;
+            
+            const width = Math.abs(x - this.newShape.x)
+            const height = Math.abs(y - this.newShape.y)
+            this.newShape.width = width;
+            this.newShape.height = height;
+            this.updateOrigin(pos);
+            if (center) {
+                this.newShape.origin = `${width/2}px ${height/2}px`;
+                this.newShape.width = width;
+                this.newShape.height = height;
             }
         },
         startDrawing(pos: { x: number, y: number }) {

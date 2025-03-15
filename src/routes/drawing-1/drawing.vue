@@ -34,8 +34,8 @@
                 </div>
                 <div class="option-group" name="Fill" v-if="['DCRectangle', 'DCSquare', 'DCCircle', 'DCEllipse'].includes(selectedShape)">
                     <div class="option __isGroup">
+                        <label for="options-rectangle-stroke-alignment">Fill Color</label>
                         <input type="color" v-model="fillColor" v-if="!isTransparent"/>
-
                     </div>
                     <div class="option">
                         <span>
@@ -47,10 +47,24 @@
                     </div>
                 </div>
                 <div class="option-group" name="Stroke" v-if="['DCRectangle', 'DCSquare', 'DCCircle', 'DCEllipse'].includes(selectedShape)">
+                    <div class="option __isGroup">
+                        <label for="options-rectangle-stroke-alignment">Stroke Color</label>
+                        <input type="color" v-model="stroke.color"/>
+                    </div>
                     
-                    Color <br>
-                    Width <br>
-                    Alignment
+                    <div class="option __isGroup">
+                        <label for="options-rectangle-stroke-alignment">Stroke Width</label>
+                        <input type="number" v-model="stroke.width" min="0"/>
+                    </div>
+
+                    <div class="option">
+                        <label for="options-rectangle-stroke-alignment">Stroke Alignment</label>
+                        <select v-model="stroke.alignment">
+                            <option value="inner">Inner</option>
+                            <option value="center">Center</option>
+                            <option value="outer">Outer</option>
+                        </select>
+                    </div>
                 </div>
             </div>
         </aside>
@@ -73,6 +87,11 @@ export default defineComponent({
             dynamicCanvas: undefined as DynamicCanvas | undefined,
             selectedShape: "",
             fillColor: "#fff",
+            stroke: {
+                color: "#04a9cc",
+                width: 1,
+                alignment: "inner" as "inner" | "outer" | "center",
+            },
             mouseDown: false,
             newShape: undefined as DCCircle | DCEllipse | DCRectangle | DCSquare | DCImage | undefined,
             selectedShapeObject: undefined as DCCircle | DCEllipse | DCRectangle | DCSquare | DCImage | undefined,
@@ -114,14 +133,6 @@ export default defineComponent({
         onMouseDown(event: MouseEvent) {
             this.mouseDown = true;
             this.startDrawing({x: event.offsetX, y: event.offsetY});
-
-            if (this.newShape) {
-                if (this.isTransparent) {
-                    this.newShape.fill = "transparent";
-                } else {
-                    this.newShape.fill = this.fillColor;
-                }
-            }
 
             console.log("Mouse down", event);
         },
@@ -241,6 +252,7 @@ export default defineComponent({
             if (this.selectedShape == "" || !this.dynamicCanvas) {
                 return;
             }
+            
             if (this.selectedShape == "DCCircle") {
                 this.newShape = new DCCircle(this.dynamicCanvas.canvas, {
                     x: pos.x,
@@ -249,7 +261,8 @@ export default defineComponent({
                     // width: 1,
                     // height: 1,
                     origin: "top left",
-                    stroke: { color: "#04a9cc", width: 1, alignment: "inner" },
+                    stroke: this.stroke,
+                    fill: this.isTransparent ? "transparent" : this.fillColor,
                 });
                 
             } else if (this.selectedShape == "DCEllipse") {
@@ -259,7 +272,8 @@ export default defineComponent({
                     width: 0,
                     height: 0,
                     origin: "top left",
-                    stroke: { color: "#04a9cc", width: 1, alignment: "inner" },
+                    stroke: this.stroke,
+                    fill: this.isTransparent ? "transparent" : this.fillColor,
                 });
             } else if (this.selectedShape == "DCSquare") {
                 this.newShape = new DCSquare(this.dynamicCanvas.canvas, {
@@ -267,7 +281,8 @@ export default defineComponent({
                     y: pos.y,
                     size: 0,
                     origin: "top left",
-                    stroke: { color: "#04a9cc", width: 1, alignment: "inner" },
+                    stroke: this.stroke,
+                    fill: this.isTransparent ? "transparent" : this.fillColor,
                 });
             } else if (this.selectedShape == "DCRectangle") {
                 this.newShape = new DCRectangle(this.dynamicCanvas.canvas, {
@@ -276,7 +291,8 @@ export default defineComponent({
                     width: 0,
                     height: 0,
                     origin: "top left",
-                    stroke: { color: "#04a9cc", width: 1, alignment: "inner" },
+                    stroke: this.stroke,
+                    fill: this.isTransparent ? "transparent" : this.fillColor,
                 });
             } else if (this.selectedShape == "DCImage") {
                 this.newShape = new DCImage(this.dynamicCanvas.canvas, {

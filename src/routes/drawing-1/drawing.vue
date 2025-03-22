@@ -46,6 +46,12 @@
                         </span>
                     </div>
                 </div>
+                <div class="option-group" name="Image" v-if="selectedShape === 'DCImage'">
+                    <div class="option __isGroup">
+                        <label for="image-upload">Upload afbeelding</label>
+                        <input type="file" id="image-upload" @change="handleImageUpload" accept="image/*"/>
+                    </div>
+                </div>
                 <div class="option-group" name="Stroke" v-if="['DCRectangle', 'DCSquare', 'DCCircle', 'DCEllipse'].includes(selectedShape)">
                     <div class="option __isGroup">
                         <label for="options-rectangle-stroke-alignment">Stroke Color</label>
@@ -106,6 +112,8 @@ export default defineComponent({
                 reverseSpeed: -2,
                 turningSpeed: 3,
             },
+            selectedImageSrc: "" as string,
+            imageAspectRatio: 1,
         };
     },
     mounted() {
@@ -163,6 +171,8 @@ export default defineComponent({
                 this.drawRectangle({x: event.offsetX, y: event.offsetY, center: !!event.altKey}); 
             } else if (this.newShape instanceof DCEllipse) {
                 this.drawEllipse({x: event.offsetX, y: event.offsetY, center: !!event.altKey}); 
+            } else if (this.newShape instanceof DCImage) {
+                this.drawImage({x: event.offsetX, y: event.offsetY, center: !!event.altKey}); 
             }
         },
         onMouseLeave(event: MouseEvent) {
@@ -248,6 +258,35 @@ export default defineComponent({
                 this.newShape.height = height;
             }
         },
+        drawImage(pos: {x: number, y:number, center: boolean}) {
+            if (!(this.newShape instanceof DCImage)) {
+                return;
+            }
+            const {x, y, center} = pos;
+            
+            const width = Math.abs(x - this.newShape.x);
+            const height = Math.abs(y - this.newShape.y);
+
+            // Als shift is ingedrukt, behoud de aspect ratio
+            if (event instanceof MouseEvent && event.shiftKey) {
+                // Bereken nieuwe dimensies op basis van aspect ratio
+                if (width > height) {
+                    this.newShape.width = width;
+                    this.newShape.height = width / this.imageAspectRatio;
+                } else {
+                    this.newShape.height = height;
+                    this.newShape.width = height * this.imageAspectRatio;
+                }
+            } else {
+                this.newShape.width = width;
+                this.newShape.height = height;
+            }
+
+            this.updateOrigin(pos);
+            if (center) {
+                this.newShape.origin = `${this.newShape.width/2}px ${this.newShape.height/2}px`;
+            }
+        },
         startDrawing(pos: { x: number, y: number }) {
             if (this.selectedShape == "" || !this.dynamicCanvas) {
                 return;
@@ -301,7 +340,7 @@ export default defineComponent({
                     width: 0,
                     height: 0,
                     origin: "top left",
-                    src: "",
+                    src: this.selectedImageSrc || "./assets/image-icon.png",
                 });
             }
             if (this.newShape) {
@@ -416,6 +455,32 @@ export default defineComponent({
                 }
             });
 
+        },
+        handleImageUpload(event: Event) {
+            const input = event.target as HTMLInputElement;
+            if (input.files && input.files[0]) {
+                const file = input.files[0];
+                const reader = new FileReader();
+                
+                reader.onload = (e) => {
+                    if (e.target?.result && typeof e.target.result === 'string') {
+                        const img = new Image();
+                        img.onload = () => {
+                            this.imageAspectRatio = img.width / img.height;
+                        };
+                        img.src = e.target.result;
+
+                        // Update de src van de geselecteerde afbeelding als die bestaat
+                        if (this.newShape instanceof DCImage) {
+                            this.newShape.src = e.target.result;
+                        }
+                        // Sla de URL op voor nieuwe afbeeldingen
+                        this.selectedImageSrc = e.target.result;
+                    }
+                };
+                
+                reader.readAsDataURL(file);
+            }
         },
     },
 });

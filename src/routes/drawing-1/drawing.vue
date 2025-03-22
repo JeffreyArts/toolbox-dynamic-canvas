@@ -131,54 +131,64 @@ export default defineComponent({
             this.drawShapeIcon("image");
 
             canvas.addEventListener("mousedown", this.onMouseDown);
-            canvas.addEventListener("mousemove", this.onMouseMove);
+            document.body.addEventListener("mousemove", this.onMouseMove);
             document.body.addEventListener("mouseup", this.onMouseUp);
+            document.body.addEventListener("mouseleave", this.onMouseLeave);
         }
     },
     beforeUnmount() {
+        // Cleanup event listeners
+        const canvas = this.$refs["targetCanvas"] as HTMLCanvasElement;
+        if (canvas) {
+            canvas.removeEventListener("mousedown", this.onMouseDown);
+            document.body.removeEventListener("mousemove", this.onMouseMove);
+            document.body.removeEventListener("mouseup", this.onMouseUp);
+            document.body.removeEventListener("mouseleave", this.onMouseLeave);
+        }
     },
     methods: {
+        getCanvasCoordinates(event: MouseEvent) {
+            if (!this.dynamicCanvas) return { x: 0, y: 0 };
+            
+            const rect = this.dynamicCanvas.canvas.getBoundingClientRect();
+            return {
+                x: event.clientX - rect.left,
+                y: event.clientY - rect.top
+            };
+        },
         onMouseDown(event: MouseEvent) {
             this.mouseDown = true;
-            this.startDrawing({x: event.offsetX, y: event.offsetY});
-
-            console.log("Mouse down", event);
+            const coords = this.getCanvasCoordinates(event);
+            this.startDrawing(coords);
         },
         onMouseUp(event: MouseEvent) {
+            if (!this.mouseDown) return;
+            
             this.mouseDown = false;
-            if (this.dynamicCanvas) {
-                // check if the mouse is still inside the canvas
-                const rect = this.dynamicCanvas.canvas.getBoundingClientRect();
-                if (event.clientX < rect.left || event.clientX > rect.right || event.clientY < rect.top || event.clientY > rect.bottom) {
-                    this.cancelDrawing();
-                } else {
-                    this.finishDrawing();
-                }
-            }
-            console.log("Mouse up", event);
+            this.finishDrawing();
         },
         onMouseMove(event: MouseEvent) {
-            const {x,y} = {x: event.offsetX, y: event.offsetY}
-            console.log("Mouse move", this.newShape );
-            if (!this.newShape ) {
-                return
-            }
+            if (!this.mouseDown || !this.newShape) return;
+
+            const coords = this.getCanvasCoordinates(event);
+            
             if (this.newShape instanceof DCCircle) {
-                this.drawCircle({x: event.offsetX, y: event.offsetY, center: !!event.altKey}); 
+                this.drawCircle({x: coords.x, y: coords.y, center: !!event.altKey}); 
             } else if (this.newShape instanceof DCSquare) {
-                this.drawSquare({x: event.offsetX, y: event.offsetY, center: !!event.altKey}); 
+                this.drawSquare({x: coords.x, y: coords.y, center: !!event.altKey}); 
             } else if (this.newShape instanceof DCRectangle) {
-                this.drawRectangle({x: event.offsetX, y: event.offsetY, center: !!event.altKey}); 
+                this.drawRectangle({x: coords.x, y: coords.y, center: !!event.altKey}); 
             } else if (this.newShape instanceof DCEllipse) {
-                this.drawEllipse({x: event.offsetX, y: event.offsetY, center: !!event.altKey}); 
+                this.drawEllipse({x: coords.x, y: coords.y, center: !!event.altKey}); 
             } else if (this.newShape instanceof DCImage) {
-                this.drawImage({x: event.offsetX, y: event.offsetY, center: !!event.altKey}); 
+                this.drawImage({x: coords.x, y: coords.y, center: !!event.altKey}); 
             }
         },
         onMouseLeave(event: MouseEvent) {
-            this.mouseDown = false;
-            this.cancelDrawing();
-            console.log("Mouse leave", event);
+            if (event.relatedTarget === null) {
+                this.mouseDown = false;
+                this.finishDrawing();
+            }
         },
         updateOrigin(pos: { x: number, y: number }) {
             if (!this.newShape) {

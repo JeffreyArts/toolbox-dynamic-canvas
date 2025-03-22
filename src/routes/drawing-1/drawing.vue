@@ -134,6 +134,7 @@ export default defineComponent({
             document.body.addEventListener("mousemove", this.onMouseMove);
             document.body.addEventListener("mouseup", this.onMouseUp);
             document.body.addEventListener("mouseleave", this.onMouseLeave);
+            document.body.addEventListener("mouseenter", this.onMouseEnter);
         }
     },
     beforeUnmount() {
@@ -144,6 +145,7 @@ export default defineComponent({
             document.body.removeEventListener("mousemove", this.onMouseMove);
             document.body.removeEventListener("mouseup", this.onMouseUp);
             document.body.removeEventListener("mouseleave", this.onMouseLeave);
+            document.body.removeEventListener("mouseenter", this.onMouseEnter);
         }
     },
     methods: {
@@ -185,8 +187,12 @@ export default defineComponent({
             }
         },
         onMouseLeave(event: MouseEvent) {
-            if (event.relatedTarget === null) {
-                this.mouseDown = false;
+            if (!this.mouseDown) {
+                this.finishDrawing();
+            }
+        },
+        onMouseEnter(event: MouseEvent) {
+            if (event.buttons <= 0) {
                 this.finishDrawing();
             }
         },

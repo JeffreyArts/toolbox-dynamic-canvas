@@ -17,7 +17,7 @@ export class DCSquare extends DCRectangle {
     size: number
 
     constructor(canvas: HTMLCanvasElement | DynamicCanvas, options: DCSquareOptions) {
-        super(canvas, options);
+        super(canvas, options)
         this.size = options.size || 0
         this.updateSize(this.size)
         
@@ -25,26 +25,26 @@ export class DCSquare extends DCRectangle {
         const handler = {
             get: (target: DCSquare, prop: keyof DCSquare) => {
                 if (prop in target) {
-                    return target[prop];
+                    return target[prop]
                 } 
             },
             set: (target: DCSquare, prop: keyof DCSquare, value:any) => {
                 // Prevent infinite loop
                 if (prop === "updateFrame") {
-                    target.updateFrame = value;
+                    target.updateFrame = value
                     return true
                 }
                 if (prop === "size") {
                     target.updateSize(value)
-                    return true;
+                    return true
                 }
                 
-                (target as any)[prop] = value;
+                (target as any)[prop] = value
                 target.updateFrame = true
-                return true; // Indicate that the set was successful
+                return true // Indicate that the set was successful
             }
-        };
-        return new Proxy(this, handler);
+        }
+        return new Proxy(this, handler)
     }
 
     updateSize(size: number) {

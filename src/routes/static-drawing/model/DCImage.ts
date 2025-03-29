@@ -20,12 +20,12 @@ export class DCImage extends DCBasis {
     // context: CanvasRenderingContext2D
 
     constructor(canvas: HTMLCanvasElement | DynamicCanvas, options: DCImageOptions) {
-        super(canvas, options);
+        super(canvas, options)
 
-        this._src = options.src || "";
+        this._src = options.src || ""
         this.src = this._src
         if (this.src) {
-            this.loadImage(this.src);
+            this.loadImage(this.src)
         }
 
         // Make radius dynamic
@@ -36,11 +36,11 @@ export class DCImage extends DCBasis {
             set(value) {
                 this._src = value
                 if (value) {
-                    this._src = value;  // Set src directly on the target
-                    this.loadImage(value);  // Trigger the image loading
+                    this._src = value  // Set src directly on the target
+                    this.loadImage(value)  // Trigger the image loading
                 } else {
-                    this.originalImage = undefined;
-                    this._src = value;
+                    this.originalImage = undefined
+                    this._src = value
                     this.context.clearRect(0, 0, this.canvas.width, this.canvas.width)
                 }
             }
@@ -66,10 +66,10 @@ export class DCImage extends DCBasis {
             throw new Error("Canvas or context is not defined")
         }
 
-        let x = this.x - this.originValue.x;
-        let y = this.y - this.originValue.y;
-        let width = this.width;
-        let height = this.height;
+        let x = this.x - this.originValue.x
+        let y = this.y - this.originValue.y
+        let width = this.width
+        let height = this.height
         
         if (this.originalImage) {
             this.context.clearRect(0, 0, this.originalImage.width, this.originalImage.width)

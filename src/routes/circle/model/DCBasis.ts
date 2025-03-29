@@ -148,9 +148,9 @@ export abstract class DCBasis {
 
 
         // Clear the internal context before drawing
-        this.context.setTransform(1, 0, 0, 1, 0, 0);
+        this.context.setTransform(1, 0, 0, 1, 0, 0)
         // Using the addition of one, makes sure that the lines that sometimes appear on the edges of the canvas are being cleared for sure
-        this.context.clearRect(-1, -1, this.canvas.width+1, this.canvas.height+1);
+        this.context.clearRect(-1, -1, this.canvas.width+1, this.canvas.height+1)
 
         this.rotateCanvas()
         this.scaleCanvas()
@@ -159,7 +159,7 @@ export abstract class DCBasis {
         this.draw(this.context)
 
         // Draw the result from this.context onto the provided context
-        context.drawImage(this.canvas, 0, 0);
+        context.drawImage(this.canvas, 0, 0)
     }
 
     rotateCanvas() {
@@ -167,78 +167,78 @@ export abstract class DCBasis {
         let y = this.y
         
         // Change the origin point for rotating
-        this.context.translate(x, y);
+        this.context.translate(x, y)
 
         // Rotate to the new angle
-        this.context.rotate(this.angle * Math.PI / 180);
+        this.context.rotate(this.angle * Math.PI / 180)
         
         // Move the origin back (so rotation doesn't affect positioning)
-        this.context.translate(-x, -y);
+        this.context.translate(-x, -y)
     }
     
     scaleCanvas() {
-        let x = this.x;
-        let y = this.y;
-        let scaleX = this.flip.horizontal ? -this.scale.x : this.scale.x;
-        let scaleY = this.flip.vertical ? -this.scale.y : this.scale.y;
+        let x = this.x
+        let y = this.y
+        let scaleX = this.flip.horizontal ? -this.scale.x : this.scale.x
+        let scaleY = this.flip.vertical ? -this.scale.y : this.scale.y
 
 
         // Move origin to the object's position
-        this.context.translate(x, y);
+        this.context.translate(x, y)
 
         // Apply scaling
-        this.context.scale(scaleX, scaleY);
+        this.context.scale(scaleX, scaleY)
 
         // Move origin back
-        this.context.translate(-x, -y);
+        this.context.translate(-x, -y)
     }
     
     processFillStyle() {
         if (typeof this.fill === "object") {
             if (this.fill.type === "linear") { 
-                let angle = (this.fill.angle || 0) * (Math.PI / 180); // Convert degrees to radians
+                let angle = (this.fill.angle || 0) * (Math.PI / 180) // Convert degrees to radians
         
                 // Adjust x and y based on the origin
-                const xBase = this.x - this.originValue.x + this.width / 2;  // Move to center
-                const yBase = this.y - this.originValue.y + this.height / 2; // Move to center
+                const xBase = this.x - this.originValue.x + this.width / 2  // Move to center
+                const yBase = this.y - this.originValue.y + this.height / 2 // Move to center
         
                 // Calculate gradient start and end points based on the center
-                const halfDiagonal = Math.max(this.width, this.height); // Extend for full coverage
+                const halfDiagonal = Math.max(this.width, this.height) // Extend for full coverage
         
-                const x1 = xBase - (halfDiagonal / 2) * Math.cos(angle);
-                const y1 = yBase - (halfDiagonal / 2) * Math.sin(angle);
-                const x2 = xBase + (halfDiagonal / 2) * Math.cos(angle);
-                const y2 = yBase + (halfDiagonal / 2) * Math.sin(angle);
+                const x1 = xBase - (halfDiagonal / 2) * Math.cos(angle)
+                const y1 = yBase - (halfDiagonal / 2) * Math.sin(angle)
+                const x2 = xBase + (halfDiagonal / 2) * Math.cos(angle)
+                const y2 = yBase + (halfDiagonal / 2) * Math.sin(angle)
         
-                var gradient = this.context.createLinearGradient(x1, y1, x2, y2);
+                var gradient = this.context.createLinearGradient(x1, y1, x2, y2)
         
             } else if (this.fill.type === "radial") {
                 // Get center point of the shape
-                const xCenter = this.x - this.originValue.x + this.width / 2;
-                const yCenter = this.y - this.originValue.y + this.height / 2;
+                const xCenter = this.x - this.originValue.x + this.width / 2
+                const yCenter = this.y - this.originValue.y + this.height / 2
         
                 // Define radii
-                const r0 = 0; // Start with a tiny inner radius
-                const r1 = Math.max(this.width, this.height) / 2; // Outer radius to cover entire shape
+                const r0 = 0 // Start with a tiny inner radius
+                const r1 = Math.max(this.width, this.height) / 2 // Outer radius to cover entire shape
                 console.log(xCenter, yCenter, r0, r1)
-                var gradient = this.context.createRadialGradient(xCenter, yCenter, r0, xCenter, yCenter, r1);
+                var gradient = this.context.createRadialGradient(xCenter, yCenter, r0, xCenter, yCenter, r1)
             }
         
             // Apply colors to the gradient
             if (gradient && this.fill.colors) {
                 this.fill.colors.forEach((color, index) => {
                     if (typeof color === "string") {
-                        gradient.addColorStop(index / (this.fill.colors.length - 1), color);
+                        gradient.addColorStop(index / (this.fill.colors.length - 1), color)
                     } else {
-                        gradient.addColorStop(color.offset, color.color);
+                        gradient.addColorStop(color.offset, color.color)
                     }
-                });
-                this.context.fillStyle = gradient;
+                })
+                this.context.fillStyle = gradient
             }
         } else if (this.fill) {
-            this.context.fillStyle = this.fill;
+            this.context.fillStyle = this.fill
         } else {
-            this.context.fillStyle = "transparent";
+            this.context.fillStyle = "transparent"
         }
     }
 

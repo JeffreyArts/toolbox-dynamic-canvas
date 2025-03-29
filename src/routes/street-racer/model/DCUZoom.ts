@@ -35,38 +35,38 @@ export class DCUZoom {
 
     // Events
     wheelEvent(event: WheelEvent) {
-        event.preventDefault();
+        event.preventDefault()
 
-        const scaleFactor = event.deltaY < 0 ? 1 + this.speed : 1 - this.speed;
-        this.updateZoom(scaleFactor, event.clientX, event.clientY);
+        const scaleFactor = event.deltaY < 0 ? 1 + this.speed : 1 - this.speed
+        this.updateZoom(scaleFactor, event.clientX, event.clientY)
     }
     touchstartEvent(event: TouchEvent) {
         if (event.touches.length === 2) {
-            this.lastTouchDistance = this.getTouchDistance(event.touches);
+            this.lastTouchDistance = this.getTouchDistance(event.touches)
         }
     }
     touchmoveEvent(event: TouchEvent) {
         if (event.touches.length === 2) {
-            event.preventDefault();
+            event.preventDefault()
 
-            const newDistance = this.getTouchDistance(event.touches);
+            const newDistance = this.getTouchDistance(event.touches)
             if (this.lastTouchDistance) {
-                const scaleFactor = newDistance / this.lastTouchDistance;
-                this.updateZoom(scaleFactor, event.touches[0].clientX, event.touches[0].clientY);
+                const scaleFactor = newDistance / this.lastTouchDistance
+                this.updateZoom(scaleFactor, event.touches[0].clientX, event.touches[0].clientY)
             }
-            this.lastTouchDistance = newDistance;
+            this.lastTouchDistance = newDistance
         }
     }
 
     // Actions
     updateZoom(scaleFactor:number, x:number, y:number) {
-        this.level = Math.min(Math.max(this.level * scaleFactor, 0.1), 5);
+        this.level = Math.min(Math.max(this.level * scaleFactor, 0.1), 5)
     }
 
     getTouchDistance(touches: TouchList) {
-        const dx = touches[0].clientX - touches[1].clientX;
-        const dy = touches[0].clientY - touches[1].clientY;
-        return Math.sqrt(dx * dx + dy * dy);
+        const dx = touches[0].clientX - touches[1].clientX
+        const dy = touches[0].clientY - touches[1].clientY
+        return Math.sqrt(dx * dx + dy * dy)
     }
 }
 

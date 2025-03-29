@@ -21,7 +21,7 @@ export class DCCircle extends DCEllipse {
     _radius: number
     
     constructor(canvas: HTMLCanvasElement | DynamicCanvas, options: DCCircleOptions) {
-        super(canvas, options);
+        super(canvas, options)
         if (options.diameter) {
             this._diameter = options.diameter
         } else if (options.radius) {

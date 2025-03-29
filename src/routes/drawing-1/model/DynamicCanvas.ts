@@ -123,18 +123,18 @@ export class DynamicCanvas {
         } 
             
 
-        this.context.setTransform(1, 0, 0, 1, 0, 0);
+        this.context.setTransform(1, 0, 0, 1, 0, 0)
 
         const x = this.width / 2
         const y = this.height / 2
         
-        this.context.translate(x, y);
+        this.context.translate(x, y)
         if (typeof this.zoom === "number") {
-            this.context.scale(this.zoom, this.zoom);
+            this.context.scale(this.zoom, this.zoom)
         } else {
-            this.context.scale(this.zoom.level, this.zoom.level);
+            this.context.scale(this.zoom.level, this.zoom.level)
         }
-        this.context.translate(-x, -y);
+        this.context.translate(-x, -y)
 
         if (typeof this.zoom === "number") {
             this._prevZoom = this.zoom

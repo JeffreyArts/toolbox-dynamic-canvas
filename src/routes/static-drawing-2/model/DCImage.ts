@@ -19,48 +19,48 @@ export class DCImage extends DCBasis {
     // context: CanvasRenderingContext2D
 
     constructor(canvas: HTMLCanvasElement | DynamicCanvas, options: DCImageOptions) {
-        super(canvas, options);
+        super(canvas, options)
 
-        this._src = options.src || "";
+        this._src = options.src || ""
         this.src = this._src
         if (this.src) {
-            this.loadImage(this.src);
+            this.loadImage(this.src)
         }
 
         // Proxy handler
         const handler = {
             get: (target: DCImage, prop: keyof DCImage) => {
                 if (prop in target) {
-                    return target[prop];
+                    return target[prop]
                 } 
             },
             set: (target: DCImage, prop: keyof DCImage, value:any) => {
                 // Prevent infinite loop
                 if (prop === "updateFrame") {
-                    target.updateFrame = value;
+                    target.updateFrame = value
                     return true
                 } 
 
-                if (prop === 'src') {
+                if (prop === "src") {
                     // If the property being set is 'src'
-                    target._src = value; // Set _src directly on the target
+                    target._src = value // Set _src directly on the target
                     
                     if (value) {
-                        target.loadImage(value); // Trigger the image loading
+                        target.loadImage(value) // Trigger the image loading
                     } else {
-                        target.originalImage = undefined;
-                        target.context.clearRect(0, 0, target.canvas.width, target.canvas.height);
+                        target.originalImage = undefined
+                        target.context.clearRect(0, 0, target.canvas.width, target.canvas.height)
                     }
                 } else {
-                    (target as any)[prop] = value;
+                    (target as any)[prop] = value
                     target.updateFrame = true
                 }
-                return true; // Indicate that the set was successful
+                return true // Indicate that the set was successful
             }
-        };
+        }
 
         // Return the proxy for the instance
-        return new Proxy(this, handler);
+        return new Proxy(this, handler)
     }
 
 
@@ -82,10 +82,10 @@ export class DCImage extends DCBasis {
             throw new Error("Canvas or context is not defined")
         }
 
-        let x = this.x - this.originValue.x;
-        let y = this.y - this.originValue.y;
-        let width = this.width;
-        let height = this.height;
+        let x = this.x - this.originValue.x
+        let y = this.y - this.originValue.y
+        let width = this.width
+        let height = this.height
         
         if (this.originalImage) {
             this.context.clearRect(0, 0, this.originalImage.width, this.originalImage.width)

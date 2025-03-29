@@ -129,9 +129,9 @@ export abstract class DCBasis {
 
 
         // Clear the internal context before drawing
-        this.context.setTransform(1, 0, 0, 1, 0, 0);
+        this.context.setTransform(1, 0, 0, 1, 0, 0)
         // Using the addition of one, makes sure that the lines that sometimes appear on the edges of the canvas are being cleared for sure
-        this.context.clearRect(-1, -1, this.canvas.width+1, this.canvas.height+1);
+        this.context.clearRect(-1, -1, this.canvas.width+1, this.canvas.height+1)
 
         this.rotateCanvas()
         this.scaleCanvas()
@@ -140,7 +140,7 @@ export abstract class DCBasis {
         this.draw(this.context)
 
         // Draw the result from this.context onto the provided context
-        context.drawImage(this.canvas, 0, 0);
+        context.drawImage(this.canvas, 0, 0)
     }
 
     rotateCanvas() {
@@ -148,28 +148,28 @@ export abstract class DCBasis {
         let y = this.y
         
         // Change the origin point for rotating
-        this.context.translate(x, y);
+        this.context.translate(x, y)
 
         // Rotate to the new angle
-        this.context.rotate(this.angle * Math.PI / 180);
+        this.context.rotate(this.angle * Math.PI / 180)
         
         // Move the origin back (so rotation doesn't affect positioning)
-        this.context.translate(-x, -y);
+        this.context.translate(-x, -y)
     }
     
     scaleCanvas() {
-        let x = this.x;
-        let y = this.y;
+        let x = this.x
+        let y = this.y
 
 
         // Move origin to the object's position
-        this.context.translate(x, y);
+        this.context.translate(x, y)
 
         // Apply scaling
-        this.context.scale(this.scale.x, this.scale.y);
+        this.context.scale(this.scale.x, this.scale.y)
 
         // Move origin back
-        this.context.translate(-x, -y);
+        this.context.translate(-x, -y)
     }
 
     setOriginParser(name: DCOriginName, pos: number) {

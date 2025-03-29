@@ -87,56 +87,56 @@ export abstract class DCBasis {
         const handler = {
             get(target: DCBasis, prop: keyof DCBasis) {
                 if (prop === "width") {
-                    return target.boundingBox.width;
+                    return target.boundingBox.width
                 } else if (prop === "height") {
-                    return target.boundingBox.height;
+                    return target.boundingBox.height
                 } else if (prop === "angle") {
-                    return target._angle;
+                    return target._angle
                 } else if (prop === "scale") {
-                    return target._scale;
+                    return target._scale
                 } else if (prop === "origin") {
-                    return target._origin;
+                    return target._origin
                 } else if (prop === "flip") {
-                    return target._flip;
+                    return target._flip
                 }
-                return target[prop];
+                return target[prop]
             },
             set(target: DCBasis, prop: keyof DCBasis, value: any) {
                 // Prevent infinite loop
                 if (prop === "updateFrame") {
-                    target.updateFrame = value;
+                    target.updateFrame = value
                     return true
                 } 
 
                 if (prop === "width") {
-                    target.boundingBox.width = value;
-                    target.updateOrigin();
-                    target.setOrigin();
+                    target.boundingBox.width = value
+                    target.updateOrigin()
+                    target.setOrigin()
                 } else if (prop === "height") {
-                    target.boundingBox.height = value;
-                    target.updateOrigin();
-                    target.setOrigin();
+                    target.boundingBox.height = value
+                    target.updateOrigin()
+                    target.setOrigin()
                 } else if (prop === "angle") {
-                    target._angle = value;
+                    target._angle = value
                 } else if (prop === "scale") {
                     if (typeof value === "object" && (value.x || value.y)) {
-                        target._scale = {...target._scale, ...value};
+                        target._scale = {...target._scale, ...value}
                     } else if (typeof value === "number") {
-                        target._scale = {x: value, y: value};
+                        target._scale = {x: value, y: value}
                     }
                 } else if (prop === "origin") {
-                    target._origin = value;
-                    target.setOrigin();
+                    target._origin = value
+                    target.setOrigin()
                 } else if (prop === "flip") {
-                    target._flip = value;
+                    target._flip = value
                 } else {
-                    (target as any)[prop] = value;
+                    (target as any)[prop] = value
                 }
                 
-                target.updateFrame = true;
-                return true;
+                target.updateFrame = true
+                return true
             }
-        };
+        }
     }
     
     abstract draw(context: CanvasRenderingContext2D): void; // Subclasses must implement this
@@ -152,9 +152,9 @@ export abstract class DCBasis {
         }
 
         // Clear the internal context before drawing
-        this.context.setTransform(1, 0, 0, 1, 0, 0);
+        this.context.setTransform(1, 0, 0, 1, 0, 0)
         // Using the addition of one, makes sure that the lines that sometimes appear on the edges of the canvas are being cleared for sure
-        this.context.clearRect(-1, -1, this.canvas.width+1, this.canvas.height+1);
+        this.context.clearRect(-1, -1, this.canvas.width+1, this.canvas.height+1)
 
         this.rotateCanvas()
         this.scaleCanvas()
@@ -174,30 +174,30 @@ export abstract class DCBasis {
         let y = this.y
         
         // Change the origin point for rotating
-        this.context.translate(x, y);
+        this.context.translate(x, y)
 
         // Rotate to the new angle
-        this.context.rotate(this.angle * Math.PI / 180);
+        this.context.rotate(this.angle * Math.PI / 180)
         
         // Move the origin back (so rotation doesn't affect positioning)
-        this.context.translate(-x, -y);
+        this.context.translate(-x, -y)
     }
     
     scaleCanvas() {
-        let x = this.x;
-        let y = this.y;
-        let scaleX = this.flip.horizontal ? -this.scale.x : this.scale.x;
-        let scaleY = this.flip.vertical ? -this.scale.y : this.scale.y;
+        let x = this.x
+        let y = this.y
+        let scaleX = this.flip.horizontal ? -this.scale.x : this.scale.x
+        let scaleY = this.flip.vertical ? -this.scale.y : this.scale.y
 
 
         // Move origin to the object's position
-        this.context.translate(x, y);
+        this.context.translate(x, y)
 
         // Apply scaling
-        this.context.scale(scaleX, scaleY);
+        this.context.scale(scaleX, scaleY)
 
         // Move origin back
-        this.context.translate(-x, -y);
+        this.context.translate(-x, -y)
     }
     
     processFillStyle() {
@@ -205,31 +205,31 @@ export abstract class DCBasis {
             let gradient
 
             if (this.fill.type === "linear") { 
-                let angle = (this.fill.angle || 0) * (Math.PI / 180); // Convert degrees to radians
+                let angle = (this.fill.angle || 0) * (Math.PI / 180) // Convert degrees to radians
         
                 // Adjust x and y based on the origin
-                const xBase = this.x - this.originValue.x + this.width / 2;  // Move to center
-                const yBase = this.y - this.originValue.y + this.height / 2; // Move to center
+                const xBase = this.x - this.originValue.x + this.width / 2  // Move to center
+                const yBase = this.y - this.originValue.y + this.height / 2 // Move to center
         
                 // Calculate gradient start and end points based on the center
-                const halfDiagonal = Math.max(this.width, this.height); // Extend for full coverage
+                const halfDiagonal = Math.max(this.width, this.height) // Extend for full coverage
         
-                const x1 = xBase - (halfDiagonal / 2) * Math.cos(angle);
-                const y1 = yBase - (halfDiagonal / 2) * Math.sin(angle);
-                const x2 = xBase + (halfDiagonal / 2) * Math.cos(angle);
-                const y2 = yBase + (halfDiagonal / 2) * Math.sin(angle);
+                const x1 = xBase - (halfDiagonal / 2) * Math.cos(angle)
+                const y1 = yBase - (halfDiagonal / 2) * Math.sin(angle)
+                const x2 = xBase + (halfDiagonal / 2) * Math.cos(angle)
+                const y2 = yBase + (halfDiagonal / 2) * Math.sin(angle)
         
-                gradient = this.context.createLinearGradient(x1, y1, x2, y2);
+                gradient = this.context.createLinearGradient(x1, y1, x2, y2)
         
             } else if (this.fill.type === "radial") {
                 // Get center point of the shape
-                const xCenter = this.x - this.originValue.x + this.width / 2;
-                const yCenter = this.y - this.originValue.y + this.height / 2;
+                const xCenter = this.x - this.originValue.x + this.width / 2
+                const yCenter = this.y - this.originValue.y + this.height / 2
         
                 // Define radii
-                const r0 = 0; // Start with a tiny inner radius
-                const r1 = Math.max(this.width, this.height) / 2; // Outer radius to cover entire shape
-                gradient = this.context.createRadialGradient(xCenter, yCenter, r0, xCenter, yCenter, r1);
+                const r0 = 0 // Start with a tiny inner radius
+                const r1 = Math.max(this.width, this.height) / 2 // Outer radius to cover entire shape
+                gradient = this.context.createRadialGradient(xCenter, yCenter, r0, xCenter, yCenter, r1)
             }
         
             // Apply colors to the gradient
@@ -237,17 +237,17 @@ export abstract class DCBasis {
                 let gradientColors = this.fill.colors
                 this.fill.colors.forEach((color, index) => {
                     if (typeof color === "string") {
-                        gradient.addColorStop(index / (gradientColors.length - 1), color);
+                        gradient.addColorStop(index / (gradientColors.length - 1), color)
                     } else {
-                        gradient.addColorStop(color.offset, color.color);
+                        gradient.addColorStop(color.offset, color.color)
                     }
-                });
-                this.context.fillStyle = gradient;
+                })
+                this.context.fillStyle = gradient
             }
         } else if (this.fill) {
-            this.context.fillStyle = this.fill;
+            this.context.fillStyle = this.fill
         } else {
-            this.context.fillStyle = "transparent";
+            this.context.fillStyle = "transparent"
         }
     }
 

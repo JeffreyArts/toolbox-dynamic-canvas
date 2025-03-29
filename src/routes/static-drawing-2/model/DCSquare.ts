@@ -16,33 +16,33 @@ export class DCSquare extends DCRectangle {
     size: number
 
     constructor(canvas: HTMLCanvasElement | DynamicCanvas, options: DCSquareOptions) {
-        super(canvas, options);
+        super(canvas, options)
         this.size = options.size
         
         // Proxy handler
         const handler = {
             get: (target: DCSquare, prop: keyof DCSquare) => {
                 if (prop in target) {
-                    return target[prop];
+                    return target[prop]
                 } 
             },
             set: (target: DCSquare, prop: keyof DCSquare, value:any) => {
                 // Prevent infinite loop
                 if (prop === "updateFrame") {
-                    target.updateFrame = value;
+                    target.updateFrame = value
                     return true
                 } 
                 if (prop === "size") {
-                    target.width = value;
-                    target.height = value;
-                    return true;
+                    target.width = value
+                    target.height = value
+                    return true
                 }
                 
-                (target as any)[prop] = value;
+                (target as any)[prop] = value
                 target.updateFrame = true
-                return true; // Indicate that the set was successful
+                return true // Indicate that the set was successful
             }
-        };
+        }
     }
 }
 

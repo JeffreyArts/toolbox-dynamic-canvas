@@ -2,6 +2,7 @@ import js from "@eslint/js"
 import typescript from "@typescript-eslint/eslint-plugin"
 import typescriptParser from "@typescript-eslint/parser"
 import vue from "eslint-plugin-vue"
+import vueParser from "vue-eslint-parser"
 
 export default [
     js.configs.recommended,
@@ -45,13 +46,9 @@ export default [
     {
         files: ["**/*.vue"],
         languageOptions: {
-            parser: vue.parser,
+            parser: vueParser,
             parserOptions: {
-                parser: {
-                    ts: typescriptParser,
-                    js: "espree",
-                    "<template>": "espree"
-                },
+                parser: typescriptParser,
                 ecmaVersion: "latest",
                 sourceType: "module",
                 extraFileExtensions: [".vue"]
@@ -59,7 +56,21 @@ export default [
             globals: {
                 document: "readonly",
                 window: "readonly",
-                console: "readonly"
+                console: "readonly",
+                HTMLElement: "readonly",
+                HTMLCanvasElement: "readonly",
+                CanvasRenderingContext2D: "readonly",
+                Image: "readonly",
+                HTMLImageElement: "readonly",
+                HTMLInputElement: "readonly",
+                WheelEvent: "readonly",
+                TouchEvent: "readonly",
+                TouchList: "readonly",
+                MouseEvent: "readonly",
+                KeyboardEvent: "readonly",
+                Event: "readonly",
+                FileReader: "readonly",
+                requestAnimationFrame: "readonly"
             }
         },
         plugins: {
@@ -71,6 +82,9 @@ export default [
             "linebreak-style": ["error", "unix"],
             "quotes": ["error", "double"],
             "semi": ["error", "never"],
+            "no-unused-vars": "off",
+            "@typescript-eslint/no-unused-vars": ["warn"],
+            "no-undef": "off",
             "vue/html-indent": ["error", 4],
             "vue/order-in-components": ["error", {
                 order: [

@@ -2,12 +2,12 @@
     <svg class="site-icon" version="1.1" :viewBox="`0 0 ${svgWidth} ${svgHeight}`" xmlns="http://www.w3.org/2000/svg">
         <g v-if="displayGrid.length > 0">
             <rect class="site-icon-cell" v-for="(cell,x) in displayGrid" :key="x"
-                :x="1 + cell.x * 10" 
-                :y="1+ cell.y * 10" 
-                width="8" 
-                height="8"
-                :style="`fill:${cell.color};`"
-                />
+                  :x="1 + cell.x * 10" 
+                  :y="1+ cell.y * 10" 
+                  width="8" 
+                  height="8"
+                  :style="`fill:${cell.color};`"
+            />
         </g>
     </svg>
 </template>
@@ -251,7 +251,7 @@ export default defineComponent ({
                 return []
             }
 
-            const sortedArray = _.sortBy(this.custom, ["y", "x"]);
+            const sortedArray = _.sortBy(this.custom, ["y", "x"])
 
             sortedArray.forEach(point => {
                 if (!this.icon[point.y]) {

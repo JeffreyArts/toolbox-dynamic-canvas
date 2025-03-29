@@ -17,9 +17,9 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from "vue";
-import { DynamicCanvas } from "./model/DynamicCanvas";
-import DCImage from "./model/DCImage";
+import { defineComponent } from "vue"
+import { DynamicCanvas } from "./model/DynamicCanvas"
+import DCImage from "./model/DCImage"
 
 export default defineComponent({
     components: {},
@@ -37,15 +37,15 @@ export default defineComponent({
                 reverseSpeed: -2,
                 turningSpeed: 3,
             },
-        };
+        }
     },
     mounted() {
-        const canvas = this.$refs["targetCanvas"] as HTMLCanvasElement;
+        const canvas = this.$refs["targetCanvas"] as HTMLCanvasElement
         if (canvas) {
             this.dynamicCanvas = new DynamicCanvas(canvas, {
                 width: 1080,
                 height: 1920,
-            });
+            })
 
             // Set background
             this.bg = new DCImage(this.dynamicCanvas.canvas, {
@@ -56,8 +56,8 @@ export default defineComponent({
                 origin: "top left",
                 static: true,
                 src: "/assets/street-racer/background.jpg",
-            });
-            this.dynamicCanvas.layers.push(this.bg);
+            })
+            this.dynamicCanvas.layers.push(this.bg)
 
             // Set player
             this.cigaretta = new DCImage(this.dynamicCanvas.canvas, {
@@ -67,80 +67,80 @@ export default defineComponent({
                 angle: 184,
                 origin: "center center",
                 src: "/assets/street-racer/cigaretta.png",
-            });
-            console.log(this.cigaretta);
-            this.dynamicCanvas.layers.push(this.cigaretta);
+            })
+            console.log(this.cigaretta)
+            this.dynamicCanvas.layers.push(this.cigaretta)
 
             // Add event listeners
-            window.addEventListener("keydown", this.keydownEvent);
-            window.addEventListener("keyup", this.keyupEvent);
+            window.addEventListener("keydown", this.keydownEvent)
+            window.addEventListener("keyup", this.keyupEvent)
 
             // Start game loop
-            this.updateCar();
+            this.updateCar()
         }
     },
     beforeUnmount() {
-        window.removeEventListener("keydown", this.keydownEvent);
-        window.removeEventListener("keyup", this.keyupEvent);
+        window.removeEventListener("keydown", this.keydownEvent)
+        window.removeEventListener("keyup", this.keyupEvent)
     },
     methods: {
         keydownEvent(event: KeyboardEvent) {
             if (event.key.startsWith("Arrow")) {
                 event.preventDefault()
             }
-            this.keys[event.key] = true;
+            this.keys[event.key] = true
         },
         keyupEvent(event: KeyboardEvent) {
             if (event.key.startsWith("Arrow")) {
                 event.preventDefault()
             }
-            this.keys[event.key] = false;
+            this.keys[event.key] = false
         },
         updateCar() {
-            if (!this.cigaretta) return;
+            if (!this.cigaretta) return
 
-            let { speed, maxSpeed, acceleration, friction, reverseSpeed, turningSpeed } = this.car;
+            let { speed, maxSpeed, acceleration, friction, reverseSpeed, turningSpeed } = this.car
 
             // Move forward
             if (this.keys["ArrowUp"]) {
-                if (speed < maxSpeed) speed += acceleration;
+                if (speed < maxSpeed) speed += acceleration
             } else {
                 // Apply friction
-                if (speed > 0) speed -= friction;
-                else if (speed < 0) speed += friction;
+                if (speed > 0) speed -= friction
+                else if (speed < 0) speed += friction
             }
 
             // Brake / Reverse
             if (this.keys["ArrowDown"]) {
                 if (speed > 0) {
-                    speed -= acceleration * 2; // Stronger brake
+                    speed -= acceleration * 2 // Stronger brake
                 } else if (speed > reverseSpeed) {
-                    speed -= acceleration; // Slow reverse
+                    speed -= acceleration // Slow reverse
                 }
             }
 
             // Turn left
             if (this.keys["ArrowLeft"] && Math.abs(speed) > 0.1) {
-                this.cigaretta.angle -= turningSpeed * (speed / maxSpeed);
+                this.cigaretta.angle -= turningSpeed * (speed / maxSpeed)
             }
 
             // Turn right
             if (this.keys["ArrowRight"] && Math.abs(speed) > 0.1) {
-                this.cigaretta.angle += turningSpeed * (speed / maxSpeed);
+                this.cigaretta.angle += turningSpeed * (speed / maxSpeed)
             }
 
             // Convert angle to radians for movement
-            const rad = ((this.cigaretta.angle+90) * Math.PI) / 180;
-            this.cigaretta.x += Math.cos(rad) * speed;
-            this.cigaretta.y += Math.sin(rad) * speed;
+            const rad = ((this.cigaretta.angle+90) * Math.PI) / 180
+            this.cigaretta.x += Math.cos(rad) * speed
+            this.cigaretta.y += Math.sin(rad) * speed
 
             // Store updated speed
-            this.car.speed = speed;
+            this.car.speed = speed
 
-            requestAnimationFrame(this.updateCar);
+            requestAnimationFrame(this.updateCar)
         },
     },
-});
+})
 </script>
 
 <style lang="scss" scoped>

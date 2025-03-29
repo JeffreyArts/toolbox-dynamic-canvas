@@ -78,13 +78,13 @@
 </template>
 
 <script lang="ts">
-import { isProxy, toRaw , defineComponent } from "vue";
-import { DynamicCanvas } from "./model/DynamicCanvas";
-import DCEllipse from "./model/DCEllipse";
-import DCCircle from "./model/DCCircle";
-import DCRectangle from "./model/DCRectangle";
-import DCSquare from "./model/DCSquare";
-import DCImage from "./model/DCImage";
+import { isProxy, toRaw , defineComponent } from "vue"
+import { DynamicCanvas } from "./model/DynamicCanvas"
+import DCEllipse from "./model/DCEllipse"
+import DCCircle from "./model/DCCircle"
+import DCRectangle from "./model/DCRectangle"
+import DCSquare from "./model/DCSquare"
+import DCImage from "./model/DCImage"
 let testShape
 export default defineComponent({
     components: {},
@@ -114,198 +114,198 @@ export default defineComponent({
             },
             selectedImageSrc: "" as string,
             imageAspectRatio: 1,
-        };
+        }
     },
     mounted() {
-        const canvas = this.$refs["targetCanvas"] as HTMLCanvasElement;
+        const canvas = this.$refs["targetCanvas"] as HTMLCanvasElement
         if (canvas) {
             this.dynamicCanvas = new DynamicCanvas(canvas, {
                 width: 400,
                 height: 400,
-            });
+            })
 
-            this.drawShapeIcon("circle");
-            this.drawShapeIcon("ellipse");
-            this.drawShapeIcon("square");
-            this.drawShapeIcon("rectangle");
-            this.drawShapeIcon("image");
+            this.drawShapeIcon("circle")
+            this.drawShapeIcon("ellipse")
+            this.drawShapeIcon("square")
+            this.drawShapeIcon("rectangle")
+            this.drawShapeIcon("image")
 
-            canvas.addEventListener("mousedown", this.onMouseDown);
-            document.body.addEventListener("mousemove", this.onMouseMove);
-            document.body.addEventListener("mouseup", this.onMouseUp);
-            document.body.addEventListener("mouseleave", this.onMouseLeave);
-            document.body.addEventListener("mouseenter", this.onMouseEnter);
+            canvas.addEventListener("mousedown", this.onMouseDown)
+            document.body.addEventListener("mousemove", this.onMouseMove)
+            document.body.addEventListener("mouseup", this.onMouseUp)
+            document.body.addEventListener("mouseleave", this.onMouseLeave)
+            document.body.addEventListener("mouseenter", this.onMouseEnter)
         }
     },
     beforeUnmount() {
         // Cleanup event listeners
-        const canvas = this.$refs["targetCanvas"] as HTMLCanvasElement;
+        const canvas = this.$refs["targetCanvas"] as HTMLCanvasElement
         if (canvas) {
-            canvas.removeEventListener("mousedown", this.onMouseDown);
-            document.body.removeEventListener("mousemove", this.onMouseMove);
-            document.body.removeEventListener("mouseup", this.onMouseUp);
-            document.body.removeEventListener("mouseleave", this.onMouseLeave);
-            document.body.removeEventListener("mouseenter", this.onMouseEnter);
+            canvas.removeEventListener("mousedown", this.onMouseDown)
+            document.body.removeEventListener("mousemove", this.onMouseMove)
+            document.body.removeEventListener("mouseup", this.onMouseUp)
+            document.body.removeEventListener("mouseleave", this.onMouseLeave)
+            document.body.removeEventListener("mouseenter", this.onMouseEnter)
         }
     },
     methods: {
         getCanvasCoordinates(event: MouseEvent) {
-            if (!this.dynamicCanvas) return { x: 0, y: 0 };
+            if (!this.dynamicCanvas) return { x: 0, y: 0 }
             
-            const rect = this.dynamicCanvas.canvas.getBoundingClientRect();
+            const rect = this.dynamicCanvas.canvas.getBoundingClientRect()
             return {
                 x: event.clientX - rect.left,
                 y: event.clientY - rect.top
-            };
+            }
         },
         onMouseDown(event: MouseEvent) {
-            this.mouseDown = true;
-            const coords = this.getCanvasCoordinates(event);
-            this.startDrawing(coords);
+            this.mouseDown = true
+            const coords = this.getCanvasCoordinates(event)
+            this.startDrawing(coords)
         },
         onMouseUp(event: MouseEvent) {
-            if (!this.mouseDown) return;
+            if (!this.mouseDown) return
             
-            this.mouseDown = false;
-            this.finishDrawing();
+            this.mouseDown = false
+            this.finishDrawing()
         },
         onMouseMove(event: MouseEvent) {
-            if (!this.mouseDown || !this.newShape) return;
+            if (!this.mouseDown || !this.newShape) return
 
-            const coords = this.getCanvasCoordinates(event);
+            const coords = this.getCanvasCoordinates(event)
             
             if (this.newShape instanceof DCCircle) {
-                this.drawCircle({x: coords.x, y: coords.y, center: !!event.altKey}); 
+                this.drawCircle({x: coords.x, y: coords.y, center: !!event.altKey}) 
             } else if (this.newShape instanceof DCSquare) {
-                this.drawSquare({x: coords.x, y: coords.y, center: !!event.altKey}); 
+                this.drawSquare({x: coords.x, y: coords.y, center: !!event.altKey}) 
             } else if (this.newShape instanceof DCRectangle) {
-                this.drawRectangle({x: coords.x, y: coords.y, center: !!event.altKey}); 
+                this.drawRectangle({x: coords.x, y: coords.y, center: !!event.altKey}) 
             } else if (this.newShape instanceof DCEllipse) {
-                this.drawEllipse({x: coords.x, y: coords.y, center: !!event.altKey}); 
+                this.drawEllipse({x: coords.x, y: coords.y, center: !!event.altKey}) 
             } else if (this.newShape instanceof DCImage) {
-                this.drawImage({x: coords.x, y: coords.y, center: !!event.altKey}); 
+                this.drawImage({x: coords.x, y: coords.y, center: !!event.altKey}) 
             }
         },
         onMouseLeave(event: MouseEvent) {
             if (!this.mouseDown) {
-                this.finishDrawing();
+                this.finishDrawing()
             }
         },
         onMouseEnter(event: MouseEvent) {
             if (event.buttons <= 0) {
-                this.finishDrawing();
+                this.finishDrawing()
             }
         },
         updateOrigin(pos: { x: number, y: number }) {
             if (!this.newShape) {
                 return
             }
-            const {x, y} = pos;
+            const {x, y} = pos
 
             if (this.newShape.x > x && this.newShape.y < y) {
-                this.newShape.origin = "top right";
+                this.newShape.origin = "top right"
             } else if (this.newShape.x < x && this.newShape.y < y) {
-                this.newShape.origin = "top left";
+                this.newShape.origin = "top left"
             } else if (this.newShape.x < x && this.newShape.y > y) {
-                this.newShape.origin = "bottom left";
+                this.newShape.origin = "bottom left"
             } else if (this.newShape.x > x && this.newShape.y > y) {
-                this.newShape.origin = "bottom right";
+                this.newShape.origin = "bottom right"
             }
         },
         drawCircle(pos: { x: number, y: number, center: boolean }) {
             if (!(this.newShape instanceof DCCircle)) {
-                return;
+                return
             }
-            const {x, y} = pos;
+            const {x, y} = pos
             const radius = Math.max(Math.abs(x - this.newShape.x), Math.abs(y - this.newShape.y))
-            this.newShape.diameter = radius;
-            this.updateOrigin(pos);
+            this.newShape.diameter = radius
+            this.updateOrigin(pos)
             
             if (pos.center) {
-                this.newShape.origin = `${radius}px ${radius}px`;
-                this.newShape.diameter = radius*2;
+                this.newShape.origin = `${radius}px ${radius}px`
+                this.newShape.diameter = radius*2
             }
         },
         drawSquare(pos: { x: number, y: number, center: boolean }) {
             if (!(this.newShape instanceof DCSquare)) {
-                return;
+                return
             }
-            const {x, y} = pos;
+            const {x, y} = pos
             const radius = Math.max(Math.abs(x - this.newShape.x), Math.abs(y - this.newShape.y))
-            this.newShape.size = radius;
-            this.updateOrigin(pos);
+            this.newShape.size = radius
+            this.updateOrigin(pos)
             
             if (pos.center) {
-                this.newShape.origin = `${radius}px ${radius}px`;
-                this.newShape.size = radius*2;
+                this.newShape.origin = `${radius}px ${radius}px`
+                this.newShape.size = radius*2
             }
         },
         drawRectangle(pos: { x: number, y: number, center: boolean}) {
             if (!(this.newShape instanceof DCRectangle)) {
-                return;
+                return
             }
-            const {x, y, center} = pos;
+            const {x, y, center} = pos
             
             const width = Math.abs(x - this.newShape.x)
             const height = Math.abs(y - this.newShape.y)
-            this.newShape.width = width;
-            this.newShape.height = height;
-            this.updateOrigin(pos);
+            this.newShape.width = width
+            this.newShape.height = height
+            this.updateOrigin(pos)
             if (center) {
-                this.newShape.origin = `${width/2}px ${height/2}px`;
-                this.newShape.width = width;
-                this.newShape.height = height;
+                this.newShape.origin = `${width/2}px ${height/2}px`
+                this.newShape.width = width
+                this.newShape.height = height
             }
         },
         drawEllipse(pos: {x: number, y:number, center: boolean}) {
             if (!(this.newShape instanceof DCEllipse)) {
-                return;
+                return
             }
-            const {x, y, center} = pos;
+            const {x, y, center} = pos
             
             const width = Math.abs(x - this.newShape.x)
             const height = Math.abs(y - this.newShape.y)
-            this.newShape.width = width;
-            this.newShape.height = height;
-            this.updateOrigin(pos);
+            this.newShape.width = width
+            this.newShape.height = height
+            this.updateOrigin(pos)
             if (center) {
-                this.newShape.origin = `${width/2}px ${height/2}px`;
-                this.newShape.width = width;
-                this.newShape.height = height;
+                this.newShape.origin = `${width/2}px ${height/2}px`
+                this.newShape.width = width
+                this.newShape.height = height
             }
         },
         drawImage(pos: {x: number, y:number, center: boolean}) {
             if (!(this.newShape instanceof DCImage)) {
-                return;
+                return
             }
-            const {x, y, center} = pos;
+            const {x, y, center} = pos
             
-            const width = Math.abs(x - this.newShape.x);
-            const height = Math.abs(y - this.newShape.y);
+            const width = Math.abs(x - this.newShape.x)
+            const height = Math.abs(y - this.newShape.y)
 
             // Als shift is ingedrukt, behoud de aspect ratio
             if (event instanceof MouseEvent && event.shiftKey) {
                 // Bereken nieuwe dimensies op basis van aspect ratio
                 if (width > height) {
-                    this.newShape.width = width;
-                    this.newShape.height = width / this.imageAspectRatio;
+                    this.newShape.width = width
+                    this.newShape.height = width / this.imageAspectRatio
                 } else {
-                    this.newShape.height = height;
-                    this.newShape.width = height * this.imageAspectRatio;
+                    this.newShape.height = height
+                    this.newShape.width = height * this.imageAspectRatio
                 }
             } else {
-                this.newShape.width = width;
-                this.newShape.height = height;
+                this.newShape.width = width
+                this.newShape.height = height
             }
 
-            this.updateOrigin(pos);
+            this.updateOrigin(pos)
             if (center) {
-                this.newShape.origin = `${this.newShape.width/2}px ${this.newShape.height/2}px`;
+                this.newShape.origin = `${this.newShape.width/2}px ${this.newShape.height/2}px`
             }
         },
         startDrawing(pos: { x: number, y: number }) {
             if (this.selectedShape == "" || !this.dynamicCanvas) {
-                return;
+                return
             }
             
             if (this.selectedShape == "DCCircle") {
@@ -318,7 +318,7 @@ export default defineComponent({
                     origin: "top left",
                     stroke: this.stroke,
                     fill: this.isTransparent ? "transparent" : this.fillColor,
-                });
+                })
                 
             } else if (this.selectedShape == "DCEllipse") {
                 this.newShape = new DCEllipse(this.dynamicCanvas.canvas, {
@@ -329,7 +329,7 @@ export default defineComponent({
                     origin: "top left",
                     stroke: this.stroke,
                     fill: this.isTransparent ? "transparent" : this.fillColor,
-                });
+                })
             } else if (this.selectedShape == "DCSquare") {
                 this.newShape = new DCSquare(this.dynamicCanvas.canvas, {
                     x: pos.x,
@@ -338,7 +338,7 @@ export default defineComponent({
                     origin: "top left",
                     stroke: this.stroke,
                     fill: this.isTransparent ? "transparent" : this.fillColor,
-                });
+                })
             } else if (this.selectedShape == "DCRectangle") {
                 this.newShape = new DCRectangle(this.dynamicCanvas.canvas, {
                     x: pos.x,
@@ -348,7 +348,7 @@ export default defineComponent({
                     origin: "top left",
                     stroke: this.stroke,
                     fill: this.isTransparent ? "transparent" : this.fillColor,
-                });
+                })
             } else if (this.selectedShape == "DCImage") {
                 this.newShape = new DCImage(this.dynamicCanvas.canvas, {
                     x: pos.x,
@@ -357,47 +357,47 @@ export default defineComponent({
                     height: 0,
                     origin: "top left",
                     src: this.selectedImageSrc || "./assets/image-icon.png",
-                });
+                })
             }
             if (this.newShape) {
-                this.dynamicCanvas.layers.push(this.newShape);
+                this.dynamicCanvas.layers.push(this.newShape)
             }
             
         },
         finishDrawing() {
-            console.log("Stop drawing");
-            this.newShape = undefined;
+            console.log("Stop drawing")
+            this.newShape = undefined
         },
         cancelDrawing() {
-            console.log("Stop drawing");
+            console.log("Stop drawing")
             if (this.newShape) {
-                this.dynamicCanvas?.layers.pop();
-                this.newShape = undefined;
+                this.dynamicCanvas?.layers.pop()
+                this.newShape = undefined
             }
         },
         drawShapeIcon(type: string) {
             let canvas
 
             if (type == "circle") {
-                canvas = document.getElementById("shape-circle") as HTMLCanvasElement;
+                canvas = document.getElementById("shape-circle") as HTMLCanvasElement
             } else if (type == "ellipse") {
-                canvas = document.getElementById("shape-ellipse") as HTMLCanvasElement;
+                canvas = document.getElementById("shape-ellipse") as HTMLCanvasElement
             } else if (type == "square") {
-                canvas = document.getElementById("shape-square") as HTMLCanvasElement;
+                canvas = document.getElementById("shape-square") as HTMLCanvasElement
             } else if (type == "rectangle") {
-                canvas = document.getElementById("shape-rectangle") as HTMLCanvasElement;
+                canvas = document.getElementById("shape-rectangle") as HTMLCanvasElement
             } else if (type == "image") {
-                canvas = document.getElementById("shape-image") as HTMLCanvasElement;
+                canvas = document.getElementById("shape-image") as HTMLCanvasElement
             } 
 
             if (!canvas) {
-                throw new Error(`No canvas found for type ${type}`);
+                throw new Error(`No canvas found for type ${type}`)
             }
 
             const DC = new DynamicCanvas(canvas, {
                 width: 48,
                 height: 48,
-            });
+            })
 
             let newShape
 
@@ -409,7 +409,7 @@ export default defineComponent({
                     origin: "center center",
                     fill: "#ccc",
                     stroke: { color: "#333", width: 4, alignment: "inner" },
-                });
+                })
             } else if (type == "ellipse") {
                 newShape = new DCEllipse(DC.canvas, {
                     x: 24,
@@ -419,7 +419,7 @@ export default defineComponent({
                     origin: "center center",
                     fill: "#ccc",
                     stroke: { color: "#333", width: 4, alignment: "inner"},
-                });
+                })
             } else if (type == "square") {
                 newShape = new DCSquare(DC.canvas, {
                     x: 24,
@@ -428,7 +428,7 @@ export default defineComponent({
                     origin: "center center",
                     fill: "#ccc",
                     stroke: { color: "#333", width: 4, alignment: "inner"},
-                });
+                })
             } else if (type == "rectangle") {
                 newShape = new DCRectangle(DC.canvas, {
                     x: 24,
@@ -438,7 +438,7 @@ export default defineComponent({
                     origin: "center center",
                     fill: "#ccc",
                     stroke: { color: "#333", width: 4, alignment: "inner" },
-                });
+                })
             } else if (type == "image") {
                 newShape = new DCImage(DC.canvas, {
                     x: 24,
@@ -447,59 +447,59 @@ export default defineComponent({
                     height: 48,
                     origin: "center center",
                     src: "./assets/image-icon.png",
-                });
+                })
             }
 
             if (!newShape) {
-                throw new Error(`No shape for type ${type}`);
+                throw new Error(`No shape for type ${type}`)
             }
 
-            DC.layers.push(newShape);
-            this.shapes.push(newShape);
+            DC.layers.push(newShape)
+            this.shapes.push(newShape)
             
         },
         selectShape(type: string) {
             this.selectedShape = type
             this.shapes.forEach((shape) => {
-                shape.fill = "#ccc";
-            });
+                shape.fill = "#ccc"
+            })
 
             this.shapes.filter((shape) => {
                 if (shape.type == type) {
-                    shape.fill = "#58f208";
-                    this.selectedShapeObject = shape;
+                    shape.fill = "#58f208"
+                    this.selectedShapeObject = shape
                 }
-            });
+            })
 
         },
         handleImageUpload(event: Event) {
-            const input = event.target as HTMLInputElement;
+            const input = event.target as HTMLInputElement
             if (input.files && input.files[0]) {
-                const file = input.files[0];
-                const reader = new FileReader();
+                const file = input.files[0]
+                const reader = new FileReader()
                 
                 reader.onload = (e) => {
-                    if (e.target?.result && typeof e.target.result === 'string') {
-                        const img = new Image();
+                    if (e.target?.result && typeof e.target.result === "string") {
+                        const img = new Image()
                         img.onload = () => {
-                            this.imageAspectRatio = img.width / img.height;
-                        };
-                        img.src = e.target.result;
+                            this.imageAspectRatio = img.width / img.height
+                        }
+                        img.src = e.target.result
 
                         // Update de src van de geselecteerde afbeelding als die bestaat
                         if (this.newShape instanceof DCImage) {
-                            this.newShape.src = e.target.result;
+                            this.newShape.src = e.target.result
                         }
                         // Sla de URL op voor nieuwe afbeeldingen
-                        this.selectedImageSrc = e.target.result;
+                        this.selectedImageSrc = e.target.result
                     }
-                };
+                }
                 
-                reader.readAsDataURL(file);
+                reader.readAsDataURL(file)
             }
         },
     },
-});
+})
 </script>
 
 <style lang="scss" scoped>

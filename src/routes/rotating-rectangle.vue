@@ -275,56 +275,56 @@ class DCRectangle implements DCElement {
 
 
         // Clear the internal context before drawing
-        this.context.setTransform(1, 0, 0, 1, 0, 0);
-        this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        this.context.setTransform(1, 0, 0, 1, 0, 0)
+        this.context.clearRect(0, 0, this.canvas.width, this.canvas.height)
 
         this.rotateCanvas()
 
-        let x = this.x - this.originValue.x;
-        let y = this.y - this.originValue.y;
-        let width = this.width;
-        let height = this.height;
+        let x = this.x - this.originValue.x
+        let y = this.y - this.originValue.y
+        let width = this.width
+        let height = this.height
 
-        this.context.fillStyle = this.fill;
-        this.context.fillRect(x, y, width, height);
+        this.context.fillStyle = this.fill
+        this.context.fillRect(x, y, width, height)
 
         if (this.stroke.width > 0) {
-            this.context.strokeStyle = this.stroke.color;
-            this.context.lineWidth = this.stroke.width;
+            this.context.strokeStyle = this.stroke.color
+            this.context.lineWidth = this.stroke.width
 
             if (this.stroke.alignment === "outer") {
-                x -= this.stroke.width / 2;
-                y -= this.stroke.width / 2;
-                width += this.stroke.width;
-                height += this.stroke.width;
+                x -= this.stroke.width / 2
+                y -= this.stroke.width / 2
+                width += this.stroke.width
+                height += this.stroke.width
             } else if (this.stroke.alignment === "inner") {
-                x += this.stroke.width / 2;
-                y += this.stroke.width / 2;
-                width -= this.stroke.width;
-                height -= this.stroke.width;
+                x += this.stroke.width / 2
+                y += this.stroke.width / 2
+                width -= this.stroke.width
+                height -= this.stroke.width
             }
 
-            this.context.strokeRect(x, y, width, height);
+            this.context.strokeRect(x, y, width, height)
         }
 
         // Draw the result from this.context onto the provided context
-        context.drawImage(this.canvas, 0, 0);
+        context.drawImage(this.canvas, 0, 0)
     }
 
     rotateCanvas() {
         let x = this.x 
         let y = this.y
 
-        this.context.setTransform(1, 0, 0, 1, 0, 0); // Resets the transformation matrix
+        this.context.setTransform(1, 0, 0, 1, 0, 0) // Resets the transformation matrix
         
         // Change the origin point for rotating
-        this.context.translate(x, y);
+        this.context.translate(x, y)
 
         // Rotate to the new angle
-        this.context.rotate(this._angle * Math.PI / 180);
+        this.context.rotate(this._angle * Math.PI / 180)
         
         // Move the origin back (so rotation doesn't affect positioning)
-        this.context.translate(-x, -y);
+        this.context.translate(-x, -y)
     }
     
     setOriginParser(name: DCOriginName, pos: number) {
@@ -518,7 +518,7 @@ export default defineComponent ({
 
         this.loadOptions()
 
-        const canvas = this.$refs['targetCanvas'] as HTMLCanvasElement
+        const canvas = this.$refs["targetCanvas"] as HTMLCanvasElement
         if (canvas) {
             this.dynamicCanvas = new DynamicCanvas(canvas, {
                 width: this.options.width,

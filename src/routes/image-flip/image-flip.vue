@@ -238,7 +238,7 @@ export default defineComponent ({
 
         this.loadOptions()
 
-        const canvas = this.$refs['targetCanvas'] as HTMLCanvasElement
+        const canvas = this.$refs["targetCanvas"] as HTMLCanvasElement
         if (canvas) {
             this.dynamicCanvas = new DynamicCanvas(canvas, {
                 width: this.options.width,

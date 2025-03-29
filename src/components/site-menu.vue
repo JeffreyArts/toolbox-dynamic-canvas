@@ -5,10 +5,10 @@
             
             <div class="site-menu-list">
                 <span class="site-menu-list-item"
-                    @click="goTo(route.path)"
-                    v-for="(route, routeIndex) in routes" 
-                    :key="routeIndex"
-                    :class="[currentRoute.name == route.name ? '__isCurrent' : '']">{{route.name}}</span>
+                      @click="goTo(route.path)"
+                      v-for="(route, routeIndex) in routes" 
+                      :key="routeIndex"
+                      :class="[currentRoute.name == route.name ? '__isCurrent' : '']">{{route.name}}</span>
             </div>
         </div>
         

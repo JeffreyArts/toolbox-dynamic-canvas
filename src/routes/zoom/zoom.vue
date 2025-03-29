@@ -135,7 +135,7 @@ export default defineComponent ({
 
         this.loadOptions()
 
-        const canvas = this.$refs['targetCanvas'] as HTMLCanvasElement
+        const canvas = this.$refs["targetCanvas"] as HTMLCanvasElement
         if (canvas) {
             const zoomObject = new DCUZoom(canvas, {min: 0, max: 10})
             this.options.zoom = zoomObject

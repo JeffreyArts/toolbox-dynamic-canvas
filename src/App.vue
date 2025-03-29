@@ -1,6 +1,6 @@
 <template >
-  <site-menu></site-menu>
-  <section class="outlet-full"><router-view /></section>
+    <site-menu></site-menu>
+    <section class="outlet-full"><router-view /></section>
 </template>
 
 

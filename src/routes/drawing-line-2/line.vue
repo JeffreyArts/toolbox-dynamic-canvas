@@ -57,17 +57,34 @@
                             <input type="number" v-model="dynamicCanvas.layers[lastLine].points[pointIndex].y" min="0" max="400"/>
                         </span>
                     </div>
+                    <div class="option">
+                        <strong>Handle in</strong>
+                    </div>
                     <div class="option __isGroup" v-if="lastLine >= 0 && dynamicCanvas">
                         <span v-if="dynamicCanvas.layers[lastLine].points[pointIndex].handle?.in">
-                            <label for="last-line-x">Handle in X</label>
+                            <label for="last-line-x">X</label>
                             <input type="range" v-model="dynamicCanvas.layers[lastLine].points[pointIndex].handle.in.x" min="-1000" max="1000"/>
                             <input type="number" v-model="dynamicCanvas.layers[lastLine].points[pointIndex].handle.in.x" min="-1000" max="1000"/>
                         </span>
                         <span v-if="dynamicCanvas.layers[lastLine].points[pointIndex].handle?.in">
-                            <label for="last-line-y">Handle in Y</label>
+                            <label for="last-line-y">Y</label>
                             <input type="range" v-model="dynamicCanvas.layers[lastLine].points[pointIndex].handle.in.y" min="-1000" max="1000"/>
                             <input type="number" v-model="dynamicCanvas.layers[lastLine].points[pointIndex].handle.in.y" min="-1000" max="1000"/>
                         </span>
+                        <span>
+                            <label for="last-line-angle">Angle</label>
+                            <input type="range" v-model="dynamicCanvas.layers[lastLine].points[pointIndex].handle.in.angle" min="0" max="360"/>
+                            <input type="number" v-model="dynamicCanvas.layers[lastLine].points[pointIndex].handle.in.angle" min="0" max="360"/>
+                        </span>
+                        <span>
+                            <label for="last-line-length">Length</label>
+                            <input type="range" v-model="dynamicCanvas.layers[lastLine].points[pointIndex].handle.in.length" min="0" max="1000"/>
+                            <input type="number" v-model="dynamicCanvas.layers[lastLine].points[pointIndex].handle.in.length" min="0" max="1000"/>
+                        </span>
+                    </div>
+
+                    <div class="option">
+                        <strong>Handle out</strong>
                     </div>
                     <div class="option __isGroup" v-if="lastLine >= 0 && dynamicCanvas">
                         <span v-if="dynamicCanvas.layers[lastLine].points[pointIndex].handle?.out">
@@ -79,6 +96,16 @@
                             <label for="last-line-y">Handle out Y</label>
                             <input type="range" v-model="dynamicCanvas.layers[lastLine].points[pointIndex].handle.out.y" min="-1000" max="1000"/>
                             <input type="number" v-model="dynamicCanvas.layers[lastLine].points[pointIndex].handle.out.y" min="-1000" max="1000"/>
+                        </span>
+                        <span>
+                            <label for="last-line-angle">Angle</label>
+                            <input type="range" v-model="dynamicCanvas.layers[lastLine].points[pointIndex].handle.out.angle" min="0" max="360"/>
+                            <input type="number" v-model="dynamicCanvas.layers[lastLine].points[pointIndex].handle.out.angle" min="0" max="360"/>
+                        </span>
+                        <span>  
+                            <label for="last-line-length">Length</label>    
+                            <input type="range" v-model="dynamicCanvas.layers[lastLine].points[pointIndex].handle.out.length" min="0" max="1000"/>
+                            <input type="number" v-model="dynamicCanvas.layers[lastLine].points[pointIndex].handle.out.length" min="0" max="1000"/>
                         </span>
                     </div>
                     <!-- <div class="option __isGroup">

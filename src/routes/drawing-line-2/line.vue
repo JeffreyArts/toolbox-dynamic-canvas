@@ -14,7 +14,7 @@
         <aside class="sidebar">
             <div class="options">
                 <div class="option-group" name="Fill">
-                    <div class="option __isGroup">
+                    <div class="option">
                         <label for="options-rectangle-stroke-alignment">Fill Color</label>
                         <input type="color" v-model="fillColor" v-if="!isTransparent"/>
                     </div>
@@ -27,30 +27,46 @@
                         </span>
                     </div>
                 </div>
-                <div class="option-group" name="Line2">
+                <div class="option-group" name="Line">
                     <div class="option __isGroup">
+                        <button class="button" @click="addLine">Add Line</button>
+                        <button class="button" @click="extendLine">Extend Line</button>
+                        <button class="button" @click="shortenLine">Shorten Line</button>
+                    </div>
+                    <div class="option __isGroup" v-if="lastLine >= 0 && dynamicCanvas">
+                        <span>
+                            <label for="last-line-x">X</label>
+                            <input type="range" v-model="dynamicCanvas.layers[lastLine].points[dynamicCanvas.layers[lastLine].points.length -1].x" min="0" max="400"/>
+                            <input type="number" v-model="dynamicCanvas.layers[lastLine].points[dynamicCanvas.layers[lastLine].points.length -1].x" min="0" max="400"/>
+                        </span>
+                        <span>
+                            <label for="last-line-y">Y</label>
+                            <input type="range" v-model="dynamicCanvas.layers[lastLine].points[dynamicCanvas.layers[lastLine].points.length -1].y" min="0" max="400"/>
+                            <input type="number" v-model="dynamicCanvas.layers[lastLine].points[dynamicCanvas.layers[lastLine].points.length -1].y" min="0" max="400"/>
+                        </span>
+                    </div>
+                    <!-- <div class="option __isGroup">
                         <span>
                             <label for="range">
                                 Angle
                             </label>
                             <input type="range" id="range" min="0" max="360" step=".1" v-model="line2.angle">
-                            <!-- optional number display-->
                             <input type="number" min="0" max="360" step=".1" v-model="line2.angle">
                         </span>
                         <span>
                             <label for="options-rectangle-stroke-alignment">Distance</label>
                             <input type="number" v-model="line2.distance" min="0"/>
                         </span>
-                    </div>
+                    </div> -->
                 </div>
                 
                 <div class="option-group" name="Stroke">
-                    <div class="option __isGroup">
+                    <div class="option">
                         <label for="options-rectangle-stroke-alignment">Stroke Color</label>
                         <input type="color" v-model="stroke.color"/>
                     </div>
                     
-                    <div class="option __isGroup">
+                    <div class="option ">
                         <label for="options-rectangle-stroke-alignment">Stroke Width</label>
                         <input type="number" v-model="stroke.width" min="0"/>
                     </div>
@@ -85,6 +101,7 @@ export default defineComponent({
                 angle: 0,
                 distance: 100,
             },
+            lastLine: 0,
             lines: [] as DCLine[],
             stroke: {
                 color: "#04a9cc",
@@ -99,9 +116,8 @@ export default defineComponent({
     watch: {
         stroke: {
             handler(val) {
-                this.lines.forEach(line => {
-                    line.stroke = val
-                })
+                const lastLine = this.lines[this.lastLine]
+                lastLine.stroke = val
             },
             deep: true
         },
@@ -127,7 +143,7 @@ export default defineComponent({
                     handleIn.length = val.distance
                     handleIn.angle = val.angle
                 }
-                console.log("handleIn", handleIn, this.lines[1])
+                // console.log("handleIn", handleIn, this.lines[1])
             },
             deep: true
         }
@@ -169,18 +185,70 @@ export default defineComponent({
                     this.dynamicCanvas.layers.push(line)
                 }
             })
-            
+            this.lastLine = this.lines.length - 1
         }
     },
     beforeUnmount() {
     },
     methods: {
-        
+        addLine() {
+            if (!this.dynamicCanvas) {
+                return
+            }
+
+            const newLine = new DCLine(this.dynamicCanvas.canvas, {
+                points: [
+                    { x: Math.round(48 + Math.random() * (400-48)), y: Math.round(48 + Math.random() * (400-48)) },
+                    { x: Math.round(48 + Math.random() * (400-48)), y: Math.round(48 + Math.random() * (400-48)) },
+                ],
+                stroke: this.stroke,
+                closed: false,
+                fill: this.fillColor
+            })
+            this.lines.push(newLine)
+            this.dynamicCanvas.layers.push(newLine)
+            this.lastLine = this.lines.length - 1
+        },
+        extendLine() {
+            if (!this.dynamicCanvas) {
+                return
+            }
+
+            this.lastLine = this.lines.length - 1
+            const lastLine = this.lines[this.lastLine]
+            const newPoint = { x: Math.round(48 + Math.random() * (400-48)), y: Math.round(48 + Math.random() * (400-48)) }
+
+            if (lastLine) {
+                console.log("lastLine", this.dynamicCanvas.layers[this.lastLine])
+                this.dynamicCanvas.layers[this.lastLine].points.push(newPoint)
+            }
+        },
+        shortenLine() {
+            if (!this.dynamicCanvas) {
+                return
+            }
+            this.dynamicCanvas.layers[this.lastLine].points.pop()
+            if (this.dynamicCanvas.layers[this.lastLine].points.length === 0) {
+                this.lastLine --
+            }
+        }
     },
 })
 </script>
 
 <style lang="scss" scoped>
+.__isGroup {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 16px;
+    > span {
+        display: inline-block;
+        flex: 1;
+    }
+}
+
 .viewport-content canvas {
     max-width: 100%;
     max-height: 88vh;

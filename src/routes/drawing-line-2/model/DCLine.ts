@@ -29,6 +29,7 @@ export interface DCLineOptions extends DCBasisOptions {
 export class DCLine extends DCBasis {
     type = "DCLine"
     points = [] as DCBezierPoint[]
+    private _points: DCBezierPoint[] = []
     closed = false
     stroke: DCStroke = { color: "#000", width: 1, alignment: "inner" }
 
@@ -36,9 +37,79 @@ export class DCLine extends DCBasis {
         super(canvas, options)
         
         this.closed = typeof options.closed === "boolean" ? options.closed : false
-        this.points = options.points ? [...options.points] : []
         this.stroke = options.stroke ? { ...options.stroke } : { color: "#000", width: 1, alignment: "inner" }
-        this._makeReactive()
+        
+        // Initialiseer eerst de private points array
+        this._points = options.points ? options.points.map(point => this._createReactivePoint(point)) : []
+        
+        // Maak een proxy voor de array operaties
+        const pointsProxy = new Proxy(this._points, {
+            get: (target, prop) => {
+                const value = target[prop as keyof typeof target]
+                if (prop === "length") {
+                    return target.length
+                }
+                
+                return value
+            },
+            set: (target, prop, value) => {
+                if (prop === "length") {
+                    target.length = value
+                    this.updateFrame = true
+                    return true
+                }
+                
+                // Als het een numerieke index is, maak het punt reactief
+                if (typeof prop === "string" && !isNaN(parseInt(prop, 10))) {
+                    target[parseInt(prop, 10)] = this._createReactivePoint(value)
+                } else {
+                    Reflect.set(target, prop, value)
+                }
+                
+                this.updateFrame = true
+                return true
+            }
+        })
+        
+        // Maak de points property reactief
+        Object.defineProperty(this, "points", {
+            get: () => pointsProxy,
+            set: (value: DCBezierPoint[]) => {
+                this._points = value.map(point => this._createReactivePoint(point))
+                this.updateFrame = true
+            }
+        })
+    }
+
+    private _createReactivePoint(point: DCBezierPoint): DCBezierPoint & { _x: number; _y: number } {
+        const reactivePoint = { ...point } as DCBezierPoint & { _x: number; _y: number }
+        const that = this // Bewaar referentie naar de DCLine instantie
+        
+        Object.defineProperty(reactivePoint, "x", {
+            get: () => {
+                return reactivePoint._x
+            },
+            set: (value: number) => {
+                reactivePoint._x = value
+                that.updateFrame = true
+            }
+        })
+
+        Object.defineProperty(reactivePoint, "y", {
+            get: () => {
+                return reactivePoint._y
+            },
+            set: (value: number) => {
+                reactivePoint._y = value
+                that.updateFrame = true
+            }
+        })
+
+        // Initialiseer de private properties
+        reactivePoint._x = point.x
+        reactivePoint._y = point.y
+
+        return reactivePoint
     }
 
     private _resolveHandle(anchor: DCPosition, handle?: DCBezierHandle): DCPosition {
@@ -61,67 +132,6 @@ export class DCLine extends DCBasis {
         return { ...anchor }
     }
 
-    private _makeReactive() {
-        const triggerRedraw = () => {
-            this.updateFrame = true
-            console.log("redraw")
-        }
-        const resolveHandle = this._resolveHandle
-        const previousHandleStates = new WeakMap<DCBezierHandle, { angle?: number; length?: number, x?: number, y?: number }>()
-
-        this.points = new Proxy(this.points, {
-            get(target, prop, receiver) {
-                const value = Reflect.get(target, prop, receiver)
-                
-                if (typeof prop === "string" && !isNaN(parseInt(prop, 10))) {
-                    console.log("number", prop, value)
-                    if (value.handle?.in) {
-                        const handle = value.handle.in
-                        const previousState = previousHandleStates.get(handle) || {}
-                        
-                        if (handle.angle !== undefined && handle.angle !== previousState.angle) {
-                            const angle = handle.angle * Math.PI / 180
-                            handle.x = value.x + Math.cos(angle) * handle.length
-                            handle.y = value.y + Math.sin(angle) * handle.length
-                            previousState.angle = handle.angle
-                        } 
-                        if (handle.length !== undefined && handle.length !== previousState.length) {
-                            const angle = (handle.angle || 0) * Math.PI / 180
-                            handle.x = value.x + Math.cos(angle) * handle.length
-                            handle.y = value.y + Math.sin(angle) * handle.length
-                            previousState.length = handle.length
-                        } else if (handle.x !== undefined && handle.x !== previousState.x) {
-                            handle.x = value.x
-                            previousState.x = handle.x
-                        } else if (handle.y !== undefined && handle.y !== previousState.y) {
-                            handle.y = value.y
-                            previousState.y = handle.y
-                        }
-                        previousHandleStates.set(handle, previousState)
-                    }
-                    triggerRedraw()
-                    return value
-                } else if (typeof value === "function") {
-                    return (...args: any[]) => {
-                        const prevLength = target.length
-                        const result = value.apply(target, args)
-                        if (target.length !== prevLength) {
-                            triggerRedraw()
-                        }
-                        return result
-                    }
-                }
-        
-                return value
-            },
-        
-            set(target, prop, value, receiver) {
-                const result = Reflect.set(target, prop, value, receiver)
-                triggerRedraw()
-                return result
-            }
-        })
-    }
 
     private _getPathPoints(): Array<{ anchor: DCPosition; handleIn: DCPosition; handleOut: DCPosition; }> {
         return this.points.map((bezierPoint) => {

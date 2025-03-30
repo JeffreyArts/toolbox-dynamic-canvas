@@ -39,9 +39,9 @@
                             <input type="number" v-model="pointIndex" min="0" :max="dynamicCanvas.layers[lastLine].points.length - 1"/>
                         </span>
                         <span>
-                            <input type="checkbox" id="checkbox-mirrored" v-model="dynamicCanvas.layers[lastLine].points[pointIndex].handle.mirror" />
-                            <label for="checkbox-mirrored">
-                                Mirrored handles
+                            <input type="checkbox" id="checkbox-closed" v-model="dynamicCanvas.layers[lastLine].closed" />
+                            <label for="checkbox-closed">
+                                Close path
                             </label>
                         </span>
                     </div>
@@ -57,6 +57,13 @@
                             <input type="number" v-model="dynamicCanvas.layers[lastLine].points[pointIndex].y" min="0" max="400"/>
                         </span>
                     </div>
+
+                    <div class="option" v-if="dynamicCanvas?.layers[lastLine]?.points[pointIndex]?.handle">
+                        <input type="checkbox" id="checkbox-mirrored" v-model="dynamicCanvas.layers[lastLine].points[pointIndex].handle.mirror" />
+                        <label for="checkbox-mirrored">
+                            Mirrored handles
+                        </label>
+                    </div >
                     <div class="option">
                         <strong>Handle in</strong>
                     </div>

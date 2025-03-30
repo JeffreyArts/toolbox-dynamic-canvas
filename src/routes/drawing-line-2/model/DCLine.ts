@@ -133,7 +133,7 @@ export class DCLine extends DCBasis {
 
             if (handle.angle !== undefined && handle.length !== undefined) {
                 // Update angle
-                handle._angle = value - 180
+                handle._angle = ((value - 180) % 360 + 360) % 360
 
                 // Update x and y
                 const angleInRadians = (handle.angle * Math.PI) / 180
@@ -172,7 +172,8 @@ export class DCLine extends DCBasis {
         if ((property === "x" || property === "y") && handle.x !== undefined && handle.y !== undefined) {
             const dx = handle.x - point.x
             const dy = handle.y - point.y
-            handle._angle = (Math.atan2(dy, dx) * 180) / Math.PI
+
+            handle._angle = (((Math.atan2(dy, dx) * 180) / Math.PI - 180) % 360 + 360) % 360
             handle._length = Math.sqrt(dx * dx + dy * dy)
         }
 

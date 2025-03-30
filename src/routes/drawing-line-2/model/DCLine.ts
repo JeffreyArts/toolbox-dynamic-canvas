@@ -100,7 +100,7 @@ export class DCLine extends DCBasis {
         } else if (typeof value === "number") {
             handle[privateProperty] = value
         } else {
-            throw new Error(`Invalid value type for property: ${property}, should be number`)
+            throw new Error(`Invalid value type for property: point[${pointIndex}].handle.${handleType}.${property}, should be number`)
         }
 
         if (point.handle) {
@@ -144,10 +144,8 @@ export class DCLine extends DCBasis {
         
         if (property === "length" && point.handle?.mirror && point.handle?.out && point.handle?.in) {
             let handle = point.handle.out
-            let otherHandle = point.handle.in
             if (handleType === "out") {
                 handle = point.handle.in
-                otherHandle = point.handle.out
             } 
             
             if (handle.length !== undefined && handle.angle !== undefined) {
@@ -249,12 +247,19 @@ export class DCLine extends DCBasis {
         const reactivePoint = { ...point } as DCBezierPoint & { _x: number; _y: number; _handle: DCBezierPoint["handle"] }
         const that = this
         
+        
         Object.defineProperty(reactivePoint, "x", {
             get: () => {
                 return reactivePoint._x
             },
             set: (value: number) => {
-                reactivePoint._x = value
+                if (typeof value === "string") { 
+                    reactivePoint._x = parseFloat(value)
+                } else if (typeof value === "number") {
+                    reactivePoint._x = value
+                } else {
+                    throw new Error("Invalid value type for property: point.x, should be number")
+                }
                 that.updateFrame = true
             }
         })
@@ -264,7 +269,13 @@ export class DCLine extends DCBasis {
                 return reactivePoint._y
             },
             set: (value: number) => {
-                reactivePoint._y = value
+                if (typeof value === "string") { 
+                    reactivePoint._y = parseFloat(value)
+                } else if (typeof value === "number") {
+                    reactivePoint._y = value
+                } else {
+                    throw new Error("Invalid value type for property: point.y, should be number")
+                }
                 that.updateFrame = true
             }
         })

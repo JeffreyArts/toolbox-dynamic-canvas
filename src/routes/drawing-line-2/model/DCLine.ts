@@ -81,8 +81,65 @@ export class DCLine extends DCBasis {
         })
     }
 
-    private _createReactivePoint(point: DCBezierPoint): DCBezierPoint & { _x: number; _y: number } {
-        const reactivePoint = { ...point } as DCBezierPoint & { _x: number; _y: number }
+    private _createReactiveHandle(handle: DCBezierHandle, point: { x: number; y: number }): DCBezierHandle & { _x?: number; _y?: number; _angle?: number; _length?: number } {
+        const reactiveHandle = { ...handle } as DCBezierHandle & { _x?: number; _y?: number; _angle?: number; _length?: number }
+        const that = this
+
+        // Initialiseer de private properties
+        if (handle.x !== undefined) reactiveHandle._x = handle.x
+        if (handle.y !== undefined) reactiveHandle._y = handle.y
+        if (handle.angle !== undefined) reactiveHandle._angle = handle.angle
+        if (handle.length !== undefined) reactiveHandle._length = handle.length
+
+        // Maak x property reactief
+        if (handle.x !== undefined) {
+            Object.defineProperty(reactiveHandle, "x", {
+                get: () => reactiveHandle._x,
+                set: (value: number) => {
+                    reactiveHandle._x = value
+                    that.updateFrame = true
+                }
+            })
+        }
+
+        // Maak y property reactief
+        if (handle.y !== undefined) {
+            Object.defineProperty(reactiveHandle, "y", {
+                get: () => reactiveHandle._y,
+                set: (value: number) => {
+                    reactiveHandle._y = value
+                    that.updateFrame = true
+                }
+            })
+        }
+
+        // Maak angle property reactief
+        if (handle.angle !== undefined) {
+            Object.defineProperty(reactiveHandle, "angle", {
+                get: () => reactiveHandle._angle,
+                set: (value: number) => {
+                    reactiveHandle._angle = value
+                    that.updateFrame = true
+                }
+            })
+        }
+
+        // Maak length property reactief
+        if (handle.length !== undefined) {
+            Object.defineProperty(reactiveHandle, "length", {
+                get: () => reactiveHandle._length,
+                set: (value: number) => {
+                    reactiveHandle._length = value
+                    that.updateFrame = true
+                }
+            })
+        }
+
+        return reactiveHandle
+    }
+
+    private _createReactivePoint(point: DCBezierPoint): DCBezierPoint & { _x: number; _y: number; _handle: DCBezierPoint["handle"] } {
+        const reactivePoint = { ...point } as DCBezierPoint & { _x: number; _y: number; _handle: DCBezierPoint["handle"] }
         const that = this // Bewaar referentie naar de DCLine instantie
         
         Object.defineProperty(reactivePoint, "x", {
@@ -108,6 +165,46 @@ export class DCLine extends DCBasis {
         // Initialiseer de private properties
         reactivePoint._x = point.x
         reactivePoint._y = point.y
+
+        // Maak een standaard handle object als deze niet bestaat
+        if (!point.handle) {
+            reactivePoint._handle = {
+                in: this._createReactiveHandle({ x: point.x, y: point.y, angle: 0, length: 0 }, point),
+                out: this._createReactiveHandle({ x: point.x, y: point.y, angle: 0, length: 0 }, point),
+                mirror: false
+            }
+        } else {
+            // Zorg ervoor dat beide handles reactief zijn
+            const inHandle = point.handle.in ? this._createReactiveHandle(point.handle.in, point) : this._createReactiveHandle({ x: point.x, y: point.y, angle: 0, length: 0 }, point)
+            const outHandle = point.handle.out ? this._createReactiveHandle(point.handle.out, point) : this._createReactiveHandle({ x: point.x, y: point.y, angle: 0, length: 0 }, point)
+            
+            reactivePoint._handle = {
+                in: inHandle,
+                out: outHandle,
+                mirror: point.handle.mirror
+            }
+        }
+
+        // Maak handle property reactief
+        Object.defineProperty(reactivePoint, "handle", {
+            get: () => {
+                return reactivePoint._handle
+            },
+            set: (value: DCBezierPoint["handle"]) => {
+                if (!value) {
+                    reactivePoint._handle = undefined
+                    that.updateFrame = true
+                    return
+                }
+
+                reactivePoint._handle = {
+                    in: value.in ? this._createReactiveHandle(value.in, point) : this._createReactiveHandle({ x: point.x, y: point.y, angle: 0, length: 0 }, point),
+                    out: value.out ? this._createReactiveHandle(value.out, point) : this._createReactiveHandle({ x: point.x, y: point.y, angle: 0, length: 0 }, point),
+                    mirror: value.mirror
+                }
+                that.updateFrame = true
+            }
+        })
 
         return reactivePoint
     }

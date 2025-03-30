@@ -39,8 +39,8 @@
                             <input type="number" v-model="pointIndex" min="0" :max="dynamicCanvas.layers[lastLine].points.length - 1"/>
                         </span>
                         <span>
-                            <input type="checkbox" id="checkbox-isTransparent" v-model="isTransparent" />
-                            <label for="checkbox-isTransparent">
+                            <input type="checkbox" id="checkbox-mirrored" v-model="dynamicCanvas.layers[lastLine].points[pointIndex].handle.mirror" />
+                            <label for="checkbox-mirrored">
                                 Mirrored handles
                             </label>
                         </span>
@@ -60,25 +60,25 @@
                     <div class="option __isGroup" v-if="lastLine >= 0 && dynamicCanvas">
                         <span v-if="dynamicCanvas.layers[lastLine].points[pointIndex].handle?.in">
                             <label for="last-line-x">Handle in X</label>
-                            <input type="range" v-model="dynamicCanvas.layers[lastLine].points[pointIndex].handle.in.x" min="0" max="400"/>
-                            <input type="number" v-model="dynamicCanvas.layers[lastLine].points[pointIndex].handle.in.x" min="0" max="400"/>
+                            <input type="range" v-model="dynamicCanvas.layers[lastLine].points[pointIndex].handle.in.x" min="-1000" max="1000"/>
+                            <input type="number" v-model="dynamicCanvas.layers[lastLine].points[pointIndex].handle.in.x" min="-1000" max="1000"/>
                         </span>
                         <span v-if="dynamicCanvas.layers[lastLine].points[pointIndex].handle?.in">
                             <label for="last-line-y">Handle in Y</label>
-                            <input type="range" v-model="dynamicCanvas.layers[lastLine].points[pointIndex].handle.in.y" min="0" max="400"/>
-                            <input type="number" v-model="dynamicCanvas.layers[lastLine].points[pointIndex].handle.in.y" min="0" max="400"/>
+                            <input type="range" v-model="dynamicCanvas.layers[lastLine].points[pointIndex].handle.in.y" min="-1000" max="1000"/>
+                            <input type="number" v-model="dynamicCanvas.layers[lastLine].points[pointIndex].handle.in.y" min="-1000" max="1000"/>
                         </span>
                     </div>
                     <div class="option __isGroup" v-if="lastLine >= 0 && dynamicCanvas">
                         <span v-if="dynamicCanvas.layers[lastLine].points[pointIndex].handle?.out">
                             <label for="last-line-x">Handle out X</label>
-                            <input type="range" v-model="dynamicCanvas.layers[lastLine].points[pointIndex].handle.out.x" min="0" max="400"/>
-                            <input type="number" v-model="dynamicCanvas.layers[lastLine].points[pointIndex].handle.out.x" min="0" max="400"/>
+                            <input type="range" v-model="dynamicCanvas.layers[lastLine].points[pointIndex].handle.out.x" min="-1000" max="1000"/>
+                            <input type="number" v-model="dynamicCanvas.layers[lastLine].points[pointIndex].handle.out.x" min="-1000" max="1000"/>
                         </span>
                         <span v-if="dynamicCanvas.layers[lastLine].points[pointIndex].handle?.out">
                             <label for="last-line-y">Handle out Y</label>
-                            <input type="range" v-model="dynamicCanvas.layers[lastLine].points[pointIndex].handle.out.y" min="0" max="400"/>
-                            <input type="number" v-model="dynamicCanvas.layers[lastLine].points[pointIndex].handle.out.y" min="0" max="400"/>
+                            <input type="range" v-model="dynamicCanvas.layers[lastLine].points[pointIndex].handle.out.y" min="-1000" max="1000"/>
+                            <input type="number" v-model="dynamicCanvas.layers[lastLine].points[pointIndex].handle.out.y" min="-1000" max="1000"/>
                         </span>
                     </div>
                     <!-- <div class="option __isGroup">
@@ -132,7 +132,7 @@ export default defineComponent({
         return {
             dynamicCanvas: undefined as DynamicCanvas | undefined,
             selectedShape: "",
-            pointIndex: 0,
+            pointIndex: 1,
             fillColor: "#fff",
             line2: {
                 angle: 0,
@@ -151,6 +151,33 @@ export default defineComponent({
         }
     },
     watch: {
+        pointIndex: {
+            handler(val) {
+                if (!this.dynamicCanvas || !this.dynamicCanvas.layers[this.lastLine].points[this.pointIndex]) {
+                    return
+                }
+                console.log("")
+                console.log("")
+                console.log("")
+                console.log("")
+                console.log("")
+                console.log("pointIndex", this.dynamicCanvas.layers[this.lastLine].points[this.pointIndex])
+                console.log("")
+                console.log("")
+                console.log("")
+                console.log("")
+                console.log("")
+            },
+            deep: true
+        },
+        // dynamicCanvas: {
+        //     handler(val) {
+        //         if (!this.dynamicCanvas || !this.dynamicCanvas.layers[this.lastLine].points[this.pointIndex]) {
+        //             return
+        //         }
+        //     },
+        //     deep: true
+        // },
         stroke: {
             handler(val) {
                 const lastLine = this.lines[this.lastLine]
@@ -206,7 +233,7 @@ export default defineComponent({
             this.lines.push(new DCLine(canvas, {
                 points: [
                     { x: 48, y: 48*2},
-                    { x: 400 - 48, y: 48*2, handle: { in: { x: 400, y: 48*2.5 }, out: { x: 400, y: 48*2.5 } } },
+                    { x: 400 - 48, y: 48*2, handle: { in: { x: 400, y: 48*2.5 }, out: { x: 400, y: 48*2.5 }, mirror: true } },
                     { x: 200, y: 48 * 2.4},
                 ],
                 stroke: this.stroke,

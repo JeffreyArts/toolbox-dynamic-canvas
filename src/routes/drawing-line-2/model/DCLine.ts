@@ -7,6 +7,10 @@ type DCBezierHandle = {
     y?: number;
     angle?: number;
     length?: number;
+    _y?: number;
+    _x?: number;
+    _angle?: number;
+    _length?: number;
 };
 
 export type DCBezierPoint = {
@@ -40,7 +44,7 @@ export class DCLine extends DCBasis {
         this.stroke = options.stroke ? { ...options.stroke } : { color: "#000", width: 1, alignment: "inner" }
         
         // Initialiseer eerst de private points array
-        this._points = options.points ? options.points.map(point => this._createReactivePoint(point)) : []
+        this._points = options.points ? options.points.map((point, index) => this._createReactivePoint(point, index)) : []
         
         // Maak een proxy voor de array operaties
         const pointsProxy = new Proxy(this._points, {
@@ -61,7 +65,7 @@ export class DCLine extends DCBasis {
                 
                 // Als het een numerieke index is, maak het punt reactief
                 if (typeof prop === "string" && !isNaN(parseInt(prop, 10))) {
-                    target[parseInt(prop, 10)] = this._createReactivePoint(value)
+                    target[parseInt(prop, 10)] = this._createReactivePoint(value, parseInt(prop, 10))
                 } else {
                     Reflect.set(target, prop, value)
                 }
@@ -75,13 +79,49 @@ export class DCLine extends DCBasis {
         Object.defineProperty(this, "points", {
             get: () => pointsProxy,
             set: (value: DCBezierPoint[]) => {
-                this._points = value.map(point => this._createReactivePoint(point))
+                this._points = value.map((point, index) => this._createReactivePoint(point, index))
                 this.updateFrame = true
             }
         })
     }
 
-    private _createReactiveHandle(handle: DCBezierHandle, point: { x: number; y: number }): DCBezierHandle & { _x?: number; _y?: number; _angle?: number; _length?: number } {
+    private _reactiveHandleHandler(
+        handle: DCBezierHandle & { _x?: number; _y?: number; _angle?: number; _length?: number },
+        pointIndex: number,
+        handleType: "in" | "out",
+        property: "x" | "y" | "angle" | "length",
+        value: number
+    ) {
+        const point = this.points[pointIndex]
+        const privateProperty = `_${property}` as keyof typeof handle
+        handle[privateProperty] = property === "y" ? parseFloat(value.toString()) : value
+
+        if (point.handle) {
+            point.handle[handleType] = handle
+        }
+
+        if (property === "y" && point.handle?.mirror && point.handle?.out && point.handle?.in) {
+            const diff = value - point.y
+            if (handleType === "in") {
+                point.handle.out._y = point.y - diff
+            } else {
+                point.handle.in._y = point.y - diff
+            }
+        }
+
+        if (property === "x" && point.handle?.mirror && point.handle?.out && point.handle?.in) {
+            const diff = value - point.x
+            if (handleType === "in") {
+                point.handle.out._x = point.x - diff
+            } else {
+                point.handle.in._x = point.x - diff
+            }
+        }
+
+        this.updateFrame = true
+    }
+
+    private _createReactiveHandle(handle: DCBezierHandle, pointIndex: number, handleType: "in" | "out"): DCBezierHandle & { _x?: number; _y?: number; _angle?: number; _length?: number } {
         const reactiveHandle = { ...handle } as DCBezierHandle & { _x?: number; _y?: number; _angle?: number; _length?: number }
         const that = this
 
@@ -91,46 +131,39 @@ export class DCLine extends DCBasis {
         if (handle.angle !== undefined) reactiveHandle._angle = handle.angle
         if (handle.length !== undefined) reactiveHandle._length = handle.length
 
-        // Maak x property reactief
+        // Maak properties reactief
         if (handle.x !== undefined) {
             Object.defineProperty(reactiveHandle, "x", {
                 get: () => reactiveHandle._x,
                 set: (value: number) => {
-                    reactiveHandle._x = value
-                    that.updateFrame = true
+                    that._reactiveHandleHandler(reactiveHandle, pointIndex, handleType, "x", value)
                 }
             })
         }
 
-        // Maak y property reactief
         if (handle.y !== undefined) {
             Object.defineProperty(reactiveHandle, "y", {
                 get: () => reactiveHandle._y,
                 set: (value: number) => {
-                    reactiveHandle._y = value
-                    that.updateFrame = true
+                    that._reactiveHandleHandler(reactiveHandle, pointIndex, handleType, "y", value)
                 }
             })
         }
 
-        // Maak angle property reactief
         if (handle.angle !== undefined) {
             Object.defineProperty(reactiveHandle, "angle", {
                 get: () => reactiveHandle._angle,
                 set: (value: number) => {
-                    reactiveHandle._angle = value
-                    that.updateFrame = true
+                    that._reactiveHandleHandler(reactiveHandle, pointIndex, handleType, "angle", value)
                 }
             })
         }
 
-        // Maak length property reactief
         if (handle.length !== undefined) {
             Object.defineProperty(reactiveHandle, "length", {
                 get: () => reactiveHandle._length,
                 set: (value: number) => {
-                    reactiveHandle._length = value
-                    that.updateFrame = true
+                    that._reactiveHandleHandler(reactiveHandle, pointIndex, handleType, "length", value)
                 }
             })
         }
@@ -138,9 +171,9 @@ export class DCLine extends DCBasis {
         return reactiveHandle
     }
 
-    private _createReactivePoint(point: DCBezierPoint): DCBezierPoint & { _x: number; _y: number; _handle: DCBezierPoint["handle"] } {
+    private _createReactivePoint(point: DCBezierPoint, pointIndex: number): DCBezierPoint & { _x: number; _y: number; _handle: DCBezierPoint["handle"] } {
         const reactivePoint = { ...point } as DCBezierPoint & { _x: number; _y: number; _handle: DCBezierPoint["handle"] }
-        const that = this // Bewaar referentie naar de DCLine instantie
+        const that = this
         
         Object.defineProperty(reactivePoint, "x", {
             get: () => {
@@ -169,19 +202,19 @@ export class DCLine extends DCBasis {
         // Maak een standaard handle object als deze niet bestaat
         if (!point.handle) {
             reactivePoint._handle = {
-                in: this._createReactiveHandle({ x: point.x, y: point.y, angle: 0, length: 0 }, point),
-                out: this._createReactiveHandle({ x: point.x, y: point.y, angle: 0, length: 0 }, point),
+                in: this._createReactiveHandle({ x: point.x, y: point.y, angle: 0, length: 0 }, pointIndex, "in"),
+                out: this._createReactiveHandle({ x: point.x, y: point.y, angle: 0, length: 0 }, pointIndex, "out"),
                 mirror: false
             }
         } else {
             // Zorg ervoor dat beide handles reactief zijn
-            const inHandle = point.handle.in ? this._createReactiveHandle(point.handle.in, point) : this._createReactiveHandle({ x: point.x, y: point.y, angle: 0, length: 0 }, point)
-            const outHandle = point.handle.out ? this._createReactiveHandle(point.handle.out, point) : this._createReactiveHandle({ x: point.x, y: point.y, angle: 0, length: 0 }, point)
+            const inHandle = point.handle.in ? this._createReactiveHandle(point.handle.in, pointIndex, "in") : this._createReactiveHandle({ x: point.x, y: point.y, angle: 0, length: 0 }, pointIndex, "in")
+            const outHandle = point.handle.out ? this._createReactiveHandle(point.handle.out, pointIndex, "out") : this._createReactiveHandle({ x: point.x, y: point.y, angle: 0, length: 0 }, pointIndex, "out")
             
             reactivePoint._handle = {
                 in: inHandle,
                 out: outHandle,
-                mirror: point.handle.mirror
+                mirror: !!point.handle.mirror
             }
         }
 
@@ -198,14 +231,13 @@ export class DCLine extends DCBasis {
                 }
 
                 reactivePoint._handle = {
-                    in: value.in ? this._createReactiveHandle(value.in, point) : this._createReactiveHandle({ x: point.x, y: point.y, angle: 0, length: 0 }, point),
-                    out: value.out ? this._createReactiveHandle(value.out, point) : this._createReactiveHandle({ x: point.x, y: point.y, angle: 0, length: 0 }, point),
+                    in: value.in ? this._createReactiveHandle(value.in, pointIndex, "in") : this._createReactiveHandle({ x: point.x, y: point.y, angle: 0, length: 0 }, pointIndex, "in"),
+                    out: value.out ? this._createReactiveHandle(value.out, pointIndex, "out") : this._createReactiveHandle({ x: point.x, y: point.y, angle: 0, length: 0 }, pointIndex, "out"),
                     mirror: value.mirror
                 }
                 that.updateFrame = true
             }
         })
-
         return reactivePoint
     }
 

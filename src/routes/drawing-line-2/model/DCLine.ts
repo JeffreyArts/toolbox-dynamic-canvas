@@ -26,6 +26,7 @@ export type DCBezierPoint = {
 export interface DCLineOptions extends DCBasisOptions {
     points: Array<DCBezierPoint>;
     closed: boolean;
+    smooth: boolean;
     fill: string | DCGradient;
     stroke: DCStroke;
 }
@@ -35,12 +36,14 @@ export class DCLine extends DCBasis {
     points = [] as DCBezierPoint[]
     private _points: DCBezierPoint[] = []
     closed = false
+    smooth = false
     stroke: DCStroke = { color: "#000", width: 1, alignment: "inner" }
 
     constructor(canvas: HTMLCanvasElement | DynamicCanvas, options: DCLineOptions) {
         super(canvas, options)
         
         this.closed = typeof options.closed === "boolean" ? options.closed : false
+        this.smooth = typeof options.smooth === "boolean" ? options.smooth : false
         this.stroke = options.stroke ? { ...options.stroke } : { color: "#000", width: 1, alignment: "inner" }
         
         // Initialiseer eerst de private points array
@@ -388,13 +391,91 @@ export class DCLine extends DCBasis {
         })
     }
 
+    // Smooth functie of PaperJS https://github.com/paperjs/paper.js/blob/92775f5279c05fb7f0a743e9e7fa02cd40ec1e70/src/path/Segment.js#L428 
+    private _applySmooth(point: DCBezierPoint, index: number, type: "catmull-rom" | "geometric" = "geometric", factor: number = 0.5) {
+        const prev = index > 0 ? this.points[index - 1] : null
+        const next = index < this.points.length - 1 ? this.points[index + 1] : null
+
+        if (!prev || !next) return
+
+        const p0 = { x: prev.x, y: prev.y }
+        const p1 = { x: point.x, y: point.y }
+        const p2 = { x: next.x, y: next.y }
+
+        const d1 = Math.sqrt(Math.pow(p1.x - p0.x, 2) + Math.pow(p1.y - p0.y, 2))
+        const d2 = Math.sqrt(Math.pow(p2.x - p1.x, 2) + Math.pow(p2.y - p1.y, 2))
+
+        if (type === "catmull-rom") {
+            const d1_a = Math.pow(d1, factor)
+            const d1_2a = d1_a * d1_a
+            const d2_a = Math.pow(d2, factor)
+            const d2_2a = d2_a * d2_a
+
+            // Bereken handle in
+            const A_in = 2 * d2_2a + 3 * d2_a * d1_a + d1_2a
+            const N_in = 3 * d2_a * (d2_a + d1_a)
+            
+            if (N_in !== 0) {
+                const handleInX = (d2_2a * p0.x + A_in * p1.x - d1_2a * p2.x) / N_in - p1.x
+                const handleInY = (d2_2a * p0.y + A_in * p1.y - d1_2a * p2.y) / N_in - p1.y
+                
+                if (!point.handle) point.handle = {}
+                if (!point.handle.in) point.handle.in = {}
+                point.handle.in.x = handleInX + p1.x
+                point.handle.in.y = handleInY + p1.y
+            }
+
+            // Bereken handle out
+            const A_out = 2 * d1_2a + 3 * d1_a * d2_a + d2_2a
+            const N_out = 3 * d1_a * (d1_a + d2_a)
+            
+            if (N_out !== 0) {
+                const handleOutX = (d1_2a * p2.x + A_out * p1.x - d2_2a * p0.x) / N_out - p1.x
+                const handleOutY = (d1_2a * p2.y + A_out * p1.y - d2_2a * p0.y) / N_out - p1.y
+                
+                if (!point.handle) point.handle = {}
+                if (!point.handle.out) point.handle.out = {}
+                point.handle.out.x = handleOutX + p1.x
+                point.handle.out.y = handleOutY + p1.y
+            }
+        } else if (type === "geometric") {
+            const vector = {
+                x: p0.x - p2.x,
+                y: p0.y - p2.y
+            }
+            const t = factor
+            const k = t * d1 / (d1 + d2)
+
+            if (!point.handle) point.handle = {}
+            if (!point.handle.in) point.handle.in = {}
+            if (!point.handle.out) point.handle.out = {}
+
+            point.handle.in.x = p1.x + vector.x * k
+            point.handle.in.y = p1.y + vector.y * k
+            point.handle.out.x = p1.x + vector.x * (k - t)
+            point.handle.out.y = p1.y + vector.y * (k - t)
+        }
+    }
+
     draw(context: CanvasRenderingContext2D) {
         if (!this.context || !this.canvas) {
             throw new Error("Canvas or context is not defined")
         }
 
         const strokeWidth = this.stroke?.width || 0
-        const pathPoints = this._getPathPoints()
+        let pathPoints = this._getPathPoints()
+
+        // Als smooth is ingeschakeld, pas dan de handles aan voor het tekenen
+        if (this.smooth) {
+            pathPoints = pathPoints.map((point, index) => {
+                const smoothPoint = { ...point }
+                this._applySmooth(
+                    { x: point.anchor.x, y: point.anchor.y, handle: { in: point.handleIn, out: point.handleOut } },
+                    index
+                )
+                return smoothPoint
+            })
+        }
 
         this.context.beginPath()
 

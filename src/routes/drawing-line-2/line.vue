@@ -44,6 +44,12 @@
                                 Close path
                             </label>
                         </span>
+                        <span>
+                            <input type="checkbox" id="checkbox-smooth" v-model="dynamicCanvas.layers[lastLine].smooth" />
+                            <label for="checkbox-smooth">
+                                Smooth
+                            </label>
+                        </span>
                     </div>
                     <div class="option __isGroup" v-if="lastLine >= 0 && dynamicCanvas">
                         <span>

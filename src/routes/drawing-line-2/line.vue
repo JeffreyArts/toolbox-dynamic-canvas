@@ -33,40 +33,52 @@
                         <button class="button" @click="extendLine">Extend Line</button>
                         <button class="button" @click="shortenLine">Shorten Line</button>
                     </div>
+                    <div class="option __isGroup" v-if="dynamicCanvas?.layers[lastLine]?.points">
+                        <span>
+                            <label for="pointIndex">Point index</label>
+                            <input type="number" v-model="pointIndex" min="0" :max="dynamicCanvas.layers[lastLine].points.length - 1"/>
+                        </span>
+                        <span>
+                            <input type="checkbox" id="checkbox-isTransparent" v-model="isTransparent" />
+                            <label for="checkbox-isTransparent">
+                                Mirrored handles
+                            </label>
+                        </span>
+                    </div>
                     <div class="option __isGroup" v-if="lastLine >= 0 && dynamicCanvas">
                         <span>
                             <label for="last-line-x">X</label>
-                            <input type="range" v-model="dynamicCanvas.layers[lastLine].points[dynamicCanvas.layers[lastLine].points.length -1].x" min="0" max="400"/>
-                            <input type="number" v-model="dynamicCanvas.layers[lastLine].points[dynamicCanvas.layers[lastLine].points.length -1].x" min="0" max="400"/>
+                            <input type="range" v-model="dynamicCanvas.layers[lastLine].points[pointIndex].x" min="0" max="400"/>
+                            <input type="number" v-model="dynamicCanvas.layers[lastLine].points[pointIndex].x" min="0" max="400"/>
                         </span>
                         <span>
                             <label for="last-line-y">Y</label>
-                            <input type="range" v-model="dynamicCanvas.layers[lastLine].points[dynamicCanvas.layers[lastLine].points.length -1].y" min="0" max="400"/>
-                            <input type="number" v-model="dynamicCanvas.layers[lastLine].points[dynamicCanvas.layers[lastLine].points.length -1].y" min="0" max="400"/>
+                            <input type="range" v-model="dynamicCanvas.layers[lastLine].points[pointIndex].y" min="0" max="400"/>
+                            <input type="number" v-model="dynamicCanvas.layers[lastLine].points[pointIndex].y" min="0" max="400"/>
                         </span>
                     </div>
                     <div class="option __isGroup" v-if="lastLine >= 0 && dynamicCanvas">
-                        <span v-if="dynamicCanvas.layers[lastLine].points[dynamicCanvas.layers[lastLine].points.length -1].handle?.in">
+                        <span v-if="dynamicCanvas.layers[lastLine].points[pointIndex].handle?.in">
                             <label for="last-line-x">Handle in X</label>
-                            <input type="range" v-model="dynamicCanvas.layers[lastLine].points[dynamicCanvas.layers[lastLine].points.length -1].handle.in.x" min="0" max="400"/>
-                            <input type="number" v-model="dynamicCanvas.layers[lastLine].points[dynamicCanvas.layers[lastLine].points.length -1].handle.in.x" min="0" max="400"/>
+                            <input type="range" v-model="dynamicCanvas.layers[lastLine].points[pointIndex].handle.in.x" min="0" max="400"/>
+                            <input type="number" v-model="dynamicCanvas.layers[lastLine].points[pointIndex].handle.in.x" min="0" max="400"/>
                         </span>
-                        <span v-if="dynamicCanvas.layers[lastLine].points[dynamicCanvas.layers[lastLine].points.length -1].handle?.in">
+                        <span v-if="dynamicCanvas.layers[lastLine].points[pointIndex].handle?.in">
                             <label for="last-line-y">Handle in Y</label>
-                            <input type="range" v-model="dynamicCanvas.layers[lastLine].points[dynamicCanvas.layers[lastLine].points.length -1].handle.in.y" min="0" max="400"/>
-                            <input type="number" v-model="dynamicCanvas.layers[lastLine].points[dynamicCanvas.layers[lastLine].points.length -1].handle.in.y" min="0" max="400"/>
+                            <input type="range" v-model="dynamicCanvas.layers[lastLine].points[pointIndex].handle.in.y" min="0" max="400"/>
+                            <input type="number" v-model="dynamicCanvas.layers[lastLine].points[pointIndex].handle.in.y" min="0" max="400"/>
                         </span>
                     </div>
                     <div class="option __isGroup" v-if="lastLine >= 0 && dynamicCanvas">
-                        <span v-if="dynamicCanvas.layers[lastLine].points[dynamicCanvas.layers[lastLine].points.length -2].handle?.out">
+                        <span v-if="dynamicCanvas.layers[lastLine].points[pointIndex].handle?.out">
                             <label for="last-line-x">Handle out X</label>
-                            <input type="range" v-model="dynamicCanvas.layers[lastLine].points[dynamicCanvas.layers[lastLine].points.length -2].handle.out.x" min="0" max="400"/>
-                            <input type="number" v-model="dynamicCanvas.layers[lastLine].points[dynamicCanvas.layers[lastLine].points.length -2].handle.out.x" min="0" max="400"/>
+                            <input type="range" v-model="dynamicCanvas.layers[lastLine].points[pointIndex].handle.out.x" min="0" max="400"/>
+                            <input type="number" v-model="dynamicCanvas.layers[lastLine].points[pointIndex].handle.out.x" min="0" max="400"/>
                         </span>
-                        <span v-if="dynamicCanvas.layers[lastLine].points[dynamicCanvas.layers[lastLine].points.length -2].handle?.out">
+                        <span v-if="dynamicCanvas.layers[lastLine].points[pointIndex].handle?.out">
                             <label for="last-line-y">Handle out Y</label>
-                            <input type="range" v-model="dynamicCanvas.layers[lastLine].points[dynamicCanvas.layers[lastLine].points.length -2].handle.out.y" min="0" max="400"/>
-                            <input type="number" v-model="dynamicCanvas.layers[lastLine].points[dynamicCanvas.layers[lastLine].points.length -2].handle.out.y" min="0" max="400"/>
+                            <input type="range" v-model="dynamicCanvas.layers[lastLine].points[pointIndex].handle.out.y" min="0" max="400"/>
+                            <input type="number" v-model="dynamicCanvas.layers[lastLine].points[pointIndex].handle.out.y" min="0" max="400"/>
                         </span>
                     </div>
                     <!-- <div class="option __isGroup">
@@ -120,6 +132,7 @@ export default defineComponent({
         return {
             dynamicCanvas: undefined as DynamicCanvas | undefined,
             selectedShape: "",
+            pointIndex: 0,
             fillColor: "#fff",
             line2: {
                 angle: 0,
